@@ -1069,9 +1069,165 @@
     line-height: 1.6;
     font-size: 0.95rem;
 }
+/* === БЕСШОВНЫЙ ДВИЖУЩИЙСЯ ЗВЁЗДНЫЙ ФОН === */
+        #constellations-bg {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: 1; /* Сзади основного интерфейса */
+            pointer-events: none; /* Пропускает клики на пустые зоны */
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+        }
+
+        /* Движущаяся лента созвездий */
+        .constellations-bg-track {
+            position: absolute;
+            display: flex;
+            white-space: nowrap;
+            will-change: transform;
+        }
+
+        /* Одно созвездие на фоне */
+        .bg-constellation-item {
+            position: relative;
+            width: 250px;
+            margin: 0 45px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: auto; /* Позволяет кликать по самим созвездиям */
+            cursor: pointer;
+            transition: transform 0.4s ease, filter 0.4s ease, opacity 0.4s ease;
+            opacity: 0.75;
+            user-select: none;
+        }
+
+        /* При наведении созвездие слегка увеличивается и зажигается ярче */
+        .bg-constellation-item:hover {
+            opacity: 1;
+            transform: scale(1.15);
+        }
+
+        .bg-constellation-item img {
+            width: 100%;
+            height: auto;
+            max-height: 220px;
+            object-fit: contain;
+            filter: drop-shadow(0 0 14px var(--glow-color, rgba(255, 215, 0, 0.4)));
+            transition: filter 0.4s ease;
+        }
+
+        .bg-constellation-item:hover img {
+            filter: drop-shadow(0 0 30px var(--glow-color, #ffd700));
+        }
+
+        .bg-constellation-title {
+            margin-top: 12px;
+            font-size: 0.85rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            color: #e0d5c1;
+            text-shadow: 0 0 8px rgba(255, 255, 255, 0.5);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Поднимаем интерфейс сайта поверх фона */
+        #stage-3 {
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ОВЕРЛЕЙ И КАРТОЧКА */
+        .constellation-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(3, 4, 8, 0.8);
+            backdrop-filter: blur(6px);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+            z-index: 90;
+        }
+
+        .constellation-overlay.active {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .character-card {
+            position: fixed;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -40%) scale(0.8);
+            width: 90%;
+            max-width: 480px;
+            background: rgba(15, 18, 28, 0.95);
+            border: 1px solid rgba(212, 175, 55, 0.4);
+            box-shadow: 0 0 35px rgba(0, 0, 0, 0.9), inset 0 0 15px rgba(212, 175, 55, 0.15);
+            border-radius: 14px;
+            padding: 25px;
+            box-sizing: border-box;
+            z-index: 100;
+            opacity: 0;
+            pointer-events: none;
+            transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .character-card.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .card-close-btn {
+            position: absolute;
+            top: 15px; right: 15px;
+            background: none; border: none;
+            color: #aaa; font-size: 1.5rem;
+            cursor: pointer; transition: color 0.2s;
+        }
+
+        .card-close-btn:hover { color: #fff; }
+
+        .card-header {
+            font-size: 1.4rem;
+            margin-bottom: 12px;
+            display: flex; align-items: center; gap: 10px;
+            font-weight: bold;
+        }
+
+        .card-desc {
+            color: #d0c8b8;
+            line-height: 1.6;
+            font-size: 0.95rem;
+        }
     </style>
 </head>
 <body>
+    <!-- 1. Фоновый контейнер с движущейся лентой (самый первый элемент в body) -->
+    <div id="constellations-bg">
+        <div class="constellations-bg-track" id="bg-track"></div>
+    </div>
+
+    <!-- Твой основной интерфейс (Stage 3) -->
+    <div id="stage-3" class="hidden">
+        ...
+    </div>
+
+    <!-- 2. Модальное окно и затемнение (в самом низу перед </body>) -->
+    <div class="constellation-overlay" id="overlay"></div>
+
+    <div class="character-card" id="card">
+        <button class="card-close-btn" id="close-btn">&times;</button>
+        <div class="card-header" id="card-title"></div>
+        <div class="card-desc" id="card-desc"></div>
+    </div>
+</body>
 
     <canvas id="particles-canvas"></canvas>
     <div id="fog-layer"></div>
@@ -1405,6 +1561,84 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script>
+        const CONSTELLATIONS = [
+            { id: "demon", name: "Демон Ангела", icon: "🐾", color: "#ffa500", img: "demon.png", desc: "Хранитель запечатанных знаний и главный архивариус." },
+            { id: "sumag", name: "Сумаг", icon: "🦊", color: "#ff7700", img: "sumag.png", desc: "Огненный лис, несущий искру древней мистики и загадок." },
+            { id: "suzume", name: "Сузуме", icon: "☀️", color: "#ffcc00", img: "suzume.png", desc: "Солнечный вестник, озаряющий самые темные уголки хроники." },
+            { id: "twiltofer", name: "Твилтофер", icon: "🪻", color: "#a855f7", img: "twiltofer.png", desc: "Повелитель сумеречного дракона и проводник древних эльфов." },
+            { id: "arikawa", name: "Арикава", icon: "🐾", color: "#ec4899", img: "arikawa.png", desc: "Душа Архива, хранящая мягкость и тепло запечатанных историй." },
+            { id: "bupi", name: "Бупи", icon: "</>", color: "#06b6d4", img: "bupi.png", desc: "Цифровой дух-киберлис, создающий и контролирующий виртуальные миры." },
+            { id: "narezka", name: "Нарезка", icon: "🚀", color: "#e2e8f0", img: "narezka.png", desc: "Космический странник и творец, рисующий среди звёзд." }
+        ];
+
+        const bgTrack = document.getElementById("bg-track");
+        const overlay = document.getElementById("overlay");
+        const card = document.getElementById("card");
+        const cardTitle = document.getElementById("card-title");
+        const cardDesc = document.getElementById("card-desc");
+        const closeBtn = document.getElementById("close-btn");
+
+        let currentPos = 0;
+        const speed = 0.5; // Скорость движения фонового потока
+        let isPaused = false;
+
+        // Дублируем элементы для бесшовного кольцевого движения
+        const streamItems = [...CONSTELLATIONS, ...CONSTELLATIONS];
+
+        if (bgTrack) {
+            streamItems.forEach((data) => {
+                const item = document.createElement("div");
+                item.className = "bg-constellation-item";
+                item.style.setProperty('--glow-color', data.color);
+
+                item.innerHTML = `
+                    <img src="${data.img}" alt="${data.name}" onerror="this.src='https://via.placeholder.com/200x200/000000/ffd700?text=${encodeURIComponent(data.name)}'">
+                    <div class="bg-constellation-title">
+                        <span>${data.icon}</span>
+                        <span>${data.name}</span>
+                    </div>
+                `;
+
+                // При клике открываем описание
+                item.addEventListener("click", () => openCard(data));
+                bgTrack.appendChild(item);
+            });
+        }
+
+        // Бесконечный цикл смещения фона
+        function animateBackgroundStream() {
+            if (!isPaused && bgTrack) {
+                currentPos -= speed;
+                const halfWidth = bgTrack.scrollWidth / 2;
+
+                if (Math.abs(currentPos) >= halfWidth) {
+                    currentPos = 0;
+                }
+                bgTrack.style.transform = `translateX(${currentPos}px)`;
+            }
+            requestAnimationFrame(animateBackgroundStream);
+        }
+
+        animateBackgroundStream();
+
+        function openCard(data) {
+            isPaused = true; // Приостанавливаем движение при просмотре
+            overlay.classList.add("active");
+            cardTitle.innerHTML = `${data.icon} ${data.name}`;
+            cardTitle.style.color = data.color;
+            cardDesc.textContent = data.desc;
+            card.classList.add("active");
+        }
+
+        function closeCard() {
+            card.classList.remove("active");
+            overlay.classList.remove("active");
+            isPaused = false; // Возобновляем движение фона
+        }
+
+        if (closeBtn) closeBtn.addEventListener("click", closeCard);
+        if (overlay) overlay.addEventListener("click", closeCard);
+    </script>
         // ============================================
         // SUPABASE — база данных Архива
         // ============================================
