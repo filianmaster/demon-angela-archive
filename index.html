@@ -1,0 +1,3653 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Архив Демона Ангела</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --accent-gold: var(--accent-gold);
+            --accent-blue: var(--accent-blue);
+            --bg-color: #050505;
+            --fog-1: rgba(212,175,55,0.105);
+            --fog-2: rgba(0,191,255,0.084);
+            --fog-3: rgba(234,234,234,0.063);
+        }
+
+        /* --- ЗИМА --- */
+        body.theme-winter.time-day {
+            --accent-gold: #bfe3ff;
+            --accent-blue: #4fc3f7;
+            --bg-color: #0b1620;
+            --fog-1: rgba(191,227,255,0.147);
+            --fog-2: rgba(79,195,247,0.105);
+            --fog-3: rgba(255,255,255,0.084);
+        }
+        body.theme-winter.time-night {
+            --accent-gold: #7fb2e0;
+            --accent-blue: #2b6cb0;
+            --bg-color: #030812;
+            --fog-1: rgba(127,178,224,0.126);
+            --fog-2: rgba(43,108,176,0.105);
+            --fog-3: rgba(255,255,255,0.042);
+        }
+
+        /* --- ВЕСНА --- */
+        body.theme-spring.time-day {
+            --accent-gold: #e8a0bf;
+            --accent-blue: #7fd88f;
+            --bg-color: #0d1410;
+            --fog-1: rgba(232,160,191,0.126);
+            --fog-2: rgba(127,216,143,0.105);
+            --fog-3: rgba(255,255,255,0.063);
+        }
+        body.theme-spring.time-night {
+            --accent-gold: #c97ea3;
+            --accent-blue: #4f9e63;
+            --bg-color: #060a08;
+            --fog-1: rgba(201,126,163,0.105);
+            --fog-2: rgba(79,158,99,0.084);
+            --fog-3: rgba(255,255,255,0.042);
+        }
+
+        /* --- ЛЕТО --- */
+        body.theme-summer.time-day {
+            --accent-gold: #ffcf5c;
+            --accent-blue: #33bfae;
+            --bg-color: #120d05;
+            --fog-1: rgba(255,207,92,0.126);
+            --fog-2: rgba(51,191,174,0.105);
+            --fog-3: rgba(255,255,255,0.063);
+        }
+        body.theme-summer.time-night {
+            --accent-gold: #e0a94a;
+            --accent-blue: #1f8f82;
+            --bg-color: #07090f;
+            --fog-1: rgba(224,169,74,0.126);
+            --fog-2: rgba(90,90,200,0.105);
+            --fog-3: rgba(255,255,255,0.042);
+        }
+
+        /* --- ОСЕНЬ --- */
+        body.theme-autumn.time-day {
+            --accent-gold: #e8823a;
+            --accent-blue: #4fb3bf;
+            --bg-color: #140d05;
+            --fog-1: rgba(232,130,58,0.147);
+            --fog-2: rgba(79,179,191,0.084);
+            --fog-3: rgba(255,255,255,0.063);
+        }
+        body.theme-autumn.time-night {
+            --accent-gold: #b5541f;
+            --accent-blue: #2f7783;
+            --bg-color: #080502;
+            --fog-1: rgba(181,84,31,0.126);
+            --fog-2: rgba(47,119,131,0.084);
+            --fog-3: rgba(255,255,255,0.042);
+        }
+
+        /* --- ДЕНЬ РОЖДЕНИЯ ДЕМОНА АНГЕЛА (23 октября) --- */
+        body.theme-birthday {
+            --accent-gold: #ffd700;
+            --accent-blue: #ff6fd8;
+            --bg-color: #150a1f;
+            --fog-1: rgba(255,215,0,0.168);
+            --fog-2: rgba(255,111,216,0.126);
+            --fog-3: rgba(180,122,255,0.105);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: #EAEAEA;
+            font-family: 'Courier New', Courier, monospace;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-x: hidden;
+            position: relative;
+            transition: background-color 1.2s ease;
+        }
+
+        #particles-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Туман */
+        #fog-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 200%;
+            height: 100%;
+            z-index: 0;
+            pointer-events: none;
+            background:
+                radial-gradient(ellipse 60% 40% at 20% 80%, var(--fog-1), transparent 60%),
+                radial-gradient(ellipse 50% 35% at 70% 30%, var(--fog-2), transparent 60%),
+                radial-gradient(ellipse 70% 50% at 45% 95%, var(--fog-3), transparent 60%);
+            animation: fogDrift 40s linear infinite;
+            mix-blend-mode: screen;
+        }
+        @keyframes fogDrift {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .fade-in {
+            animation: fadeIn 2s ease-in forwards;
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        /* --- СТАДИЯ 1 --- */
+        #stage-1 {
+            display: flex;
+            z-index: 1;
+        }
+
+        .dots {
+            font-size: 2rem;
+            letter-spacing: 0.5em;
+            color: #555;
+        }
+
+        /* --- СТАДИЯ 2 --- */
+        #stage-2 {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 1;
+            padding: 0 20px;
+        }
+
+        .symbol-container {
+            width: 100px;
+            height: 100px;
+            border: 2px solid var(--accent-gold);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 2rem;
+            background: radial-gradient(circle at 50% 40%, rgba(212,175,55,0.08), transparent 70%);
+            box-shadow: 0 0 30px rgba(0, 191, 255, 0.3), inset 0 0 20px rgba(0, 0, 0, 0.5);
+            animation: pulseSlow 4s ease-in-out infinite;
+        }
+
+        .symbol-svg, .logo-svg {
+            width: 48px;
+            height: 48px;
+            filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6));
+            animation: symbolFlicker 6s ease-in-out infinite;
+        }
+
+        @keyframes guardianAppear {
+            0% { opacity: 0; transform: scale(0.5) rotate(-15deg); filter: drop-shadow(0 0 0 rgba(212,175,55,0)); }
+            60% { opacity: 1; transform: scale(1.15) rotate(5deg); }
+            100% { opacity: 1; transform: scale(1) rotate(0deg); filter: drop-shadow(0 0 14px rgba(212,175,55,0.6)); }
+        }
+
+        @keyframes symbolFlicker {
+            0%, 100% { opacity: 1; filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6)); }
+            42% { opacity: 1; filter: drop-shadow(0 0 8px rgba(212, 175, 55, 0.6)); }
+            43% { opacity: 0.5; filter: drop-shadow(0 0 2px rgba(212, 175, 55, 0.3)); }
+            44% { opacity: 1; filter: drop-shadow(0 0 14px rgba(212, 175, 55, 0.9)); }
+            71% { opacity: 1; }
+            72% { opacity: 0.6; }
+            73% { opacity: 1; }
+        }
+
+        @keyframes pulseSlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(0, 191, 255, 0.2); }
+            50% { box-shadow: 0 0 50px rgba(0, 191, 255, 0.6); }
+        }
+
+        .title {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            font-size: 2.5rem;
+            letter-spacing: 0.3em;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.25);
+        }
+
+        .subtitle {
+            color: #888;
+            font-style: italic;
+            font-size: 0.9rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 3rem;
+        }
+
+        .enter-btn {
+            padding: 12px 40px;
+            background: transparent;
+            border: 1px solid #333;
+            color: #aaa;
+            font-family: inherit;
+            font-size: 0.9rem;
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            cursor: pointer;
+            border-radius: 2px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .enter-btn:hover {
+            border-color: var(--accent-gold);
+            background: var(--accent-gold);
+            color: #050505;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.35);
+            transform: translateY(-1px);
+            letter-spacing: 0.25em;
+        }
+
+        /* --- СТАДИЯ 3 --- */
+        #stage-3 {
+            width: 100vw;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+            padding: 100px 20px 60px;
+        }
+
+        #music-btn {
+            position: fixed;
+            top: 24px;
+            right: 24px;
+            background: transparent;
+            border: none;
+            font-size: 1.4rem;
+            cursor: pointer;
+            opacity: 0.5;
+            transition: opacity 0.3s;
+            z-index: 5;
+        }
+
+        #music-btn:hover { opacity: 1; }
+
+        #admin-toggle {
+            position: fixed;
+            bottom: 24px;
+            left: 24px;
+            background: transparent;
+            border: 1px solid #222;
+            color: #555;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            opacity: 0.6;
+            transition: all 0.3s;
+            z-index: 5;
+        }
+
+        #admin-toggle:hover {
+            opacity: 1;
+            color: var(--accent-gold);
+            border-color: var(--accent-gold);
+        }
+
+        #guardian-toggle {
+            position: fixed;
+            bottom: 24px;
+            left: 74px;
+            background: transparent;
+            border: 1px solid #222;
+            color: #555;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.3s;
+            z-index: 150;
+        }
+        #guardian-toggle:hover {
+            opacity: 1;
+            color: var(--accent-blue);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 14px rgba(0, 191, 255, 0.3);
+        }
+
+        #notifications-toggle {
+            position: fixed;
+            bottom: 24px;
+            left: 124px;
+            background: transparent;
+            border: 1px solid #222;
+            color: #555;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            font-size: 1.1rem;
+            cursor: pointer;
+            opacity: 0.7;
+            transition: all 0.3s;
+            z-index: 150;
+            position: fixed;
+        }
+        #notifications-toggle:hover {
+            opacity: 1;
+            color: var(--accent-gold);
+            border-color: var(--accent-gold);
+        }
+        #notifications-badge {
+            position: absolute;
+            top: -4px;
+            right: -4px;
+            background: #c0392b;
+            color: #fff;
+            font-size: 0.6rem;
+            min-width: 16px;
+            height: 16px;
+            line-height: 16px;
+            border-radius: 8px;
+            padding: 0 3px;
+        }
+
+        .mystic-text {
+            position: absolute;
+            top: 80px;
+            color: #888;
+            font-style: italic;
+            letter-spacing: 0.1em;
+            text-align: center;
+            max-width: 650px;
+            padding: 0 20px;
+        }
+
+        .circle-menu {
+            position: relative;
+            width: 400px;
+            height: 400px;
+            max-width: 90vw;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.3s ease-out;
+        }
+
+        .center-logo {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+
+        .center-logo:hover { transform: scale(1.15); }
+
+        .menu-item {
+            position: absolute;
+            transform: rotate(calc(40deg * var(--i))) translateY(-170px) rotate(calc(-40deg * var(--i)));
+            color: #aaa;
+            font-size: 1rem;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 480px) {
+            .circle-menu { width: 320px; height: 320px; }
+            .menu-item {
+                transform: rotate(calc(40deg * var(--i))) translateY(-130px) rotate(calc(-40deg * var(--i)));
+                font-size: 0.85rem;
+            }
+        }
+
+        .menu-item:hover {
+            color: var(--accent-blue);
+            text-shadow: 0 0 15px rgba(0, 191, 255, 0.8);
+        }
+
+        /* --- МОДАЛЬНОЕ ОКНО --- */
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(5, 5, 5, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+        }
+
+        .modal .modal-content {
+            animation: modalIn 0.4s ease-out forwards;
+        }
+
+        @keyframes modalIn {
+            0% { opacity: 0; transform: scale(0.96) translateY(6px); }
+            100% { opacity: 1; transform: scale(1) translateY(0); }
+        }
+
+        .modal-content {
+            background: rgba(10, 10, 10, 0.88);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(212, 175, 55, 0.45);
+            box-shadow: 0 8px 40px rgba(0, 0, 0, 0.6), 0 0 40px rgba(212, 175, 55, 0.12), inset 0 0 60px rgba(0, 0, 0, 0.35);
+            width: 100%;
+            max-width: 650px;
+            max-height: 80vh;
+            padding: 2.5rem;
+            position: relative;
+            overflow-y: auto;
+            border-radius: 6px;
+        }
+
+        .modal-content::before,
+        .modal-content::after {
+            content: "";
+            position: absolute;
+            width: 22px;
+            height: 22px;
+            border-color: var(--accent-gold);
+            border-style: solid;
+            opacity: 0.55;
+            pointer-events: none;
+        }
+        .modal-content::before { top: 10px; left: 10px; border-width: 1.5px 0 0 1.5px; }
+        .modal-content::after { bottom: 10px; right: 10px; border-width: 0 1.5px 1.5px 0; }
+
+        .modal-content::-webkit-scrollbar { width: 5px; }
+        .modal-content::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+        .modal-content::-webkit-scrollbar-thumb:hover { background: var(--accent-gold); }
+
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: transparent;
+            border: none;
+            color: #888;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .close-btn:hover { color: var(--accent-gold); }
+
+        .modal-title {
+            font-family: 'Cinzel', serif;
+            font-weight: 600;
+            color: var(--accent-gold);
+            font-size: 1.6rem;
+            letter-spacing: 0.2em;
+            text-align: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .modal-subtitle {
+            color: #666;
+            font-size: 0.85rem;
+            text-align: center;
+            font-style: italic;
+            margin-bottom: 2rem;
+        }
+
+        .scrolls-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .scroll-item {
+            border: 1px solid #222;
+            background: linear-gradient(180deg, #0e0e0e, #0a0a0a);
+            border-radius: 5px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.3s, transform 0.25s ease, box-shadow 0.25s ease;
+        }
+
+        .scroll-item:hover {
+            border-color: rgba(212, 175, 55, 0.45);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), 0 0 12px rgba(212, 175, 55, 0.08);
+        }
+
+        .scroll-header {
+            padding: 1rem 1.2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            color: #eaeaea;
+            font-size: 0.95rem;
+            letter-spacing: 0.05em;
+        }
+
+        .scroll-icon {
+            color: var(--accent-gold);
+            font-size: 1.2rem;
+            transition: transform 0.3s;
+        }
+
+        .scroll-body {
+            padding: 0 1.2rem 1.2rem 1.2rem;
+            color: #aaa;
+            font-size: 0.88rem;
+            line-height: 1.6;
+            border-top: 1px dashed #222;
+            margin-top: 0.5rem;
+            padding-top: 1rem;
+        }
+
+        .empty-note {
+            color: #555;
+            font-style: italic;
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 1rem;
+        }
+
+        /* --- МИР --- */
+        .category-badge {
+            display: inline-block;
+            font-size: 0.7rem;
+            letter-spacing: 0.08em;
+            color: var(--accent-blue);
+            border: 1px solid rgba(0, 191, 255, 0.4);
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-left: 10px;
+        }
+
+        .fav-star {
+            color: var(--accent-gold);
+            margin-right: 8px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            display: inline-block;
+        }
+        .fav-star:hover { transform: scale(1.3); }
+
+        /* --- ЛЕНТА ВРЕМЕНИ ХРОНИКИ --- */
+        .timeline {
+            position: relative;
+            padding-left: 34px;
+        }
+        .timeline::before {
+            content: "";
+            position: absolute;
+            left: 9px;
+            top: 6px;
+            bottom: 6px;
+            width: 2px;
+            background: linear-gradient(to bottom, rgba(212,175,55,0.6), rgba(212,175,55,0.1));
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 1.4rem;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -34px;
+            top: 4px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #0a0a0a;
+            border: 2px solid var(--accent-gold);
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.5);
+        }
+        .timeline-year {
+            font-family: 'Cinzel', serif;
+            color: var(--accent-gold);
+            font-size: 1.05rem;
+            letter-spacing: 0.1em;
+            margin-bottom: 0.3rem;
+            font-weight: 700;
+        }
+        .timeline-card {
+            border: 1px solid #222;
+            background: linear-gradient(180deg, #0e0e0e, #0a0a0a);
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.3s, transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .timeline-card:hover {
+            border-color: rgba(212, 175, 55, 0.45);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), 0 0 12px rgba(212, 175, 55, 0.08);
+        }
+        .timeline-header {
+            padding: 0.8rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            color: #eaeaea;
+            font-size: 0.92rem;
+        }
+        .timeline-body {
+            padding: 0 1rem 1rem 1rem;
+            color: #aaa;
+            font-size: 0.86rem;
+            line-height: 1.6;
+            border-top: 1px dashed #222;
+            margin-top: 0.4rem;
+            padding-top: 0.8rem;
+        }
+
+        /* --- КАРТА СВЯЗЕЙ МИРА --- */
+        .world-node-circle {
+            fill: #0d0d0d;
+            stroke: var(--accent-gold);
+            stroke-width: 1.5;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .world-node-circle:hover, .world-node-circle.active {
+            fill: rgba(212, 175, 55, 0.25);
+            stroke-width: 2.5;
+        }
+        .world-node-label {
+            fill: #ccc;
+            font-size: 8px;
+            font-family: 'Courier New', monospace;
+            text-anchor: middle;
+            pointer-events: none;
+        }
+        .world-link-line {
+            stroke: rgba(0, 191, 255, 0.35);
+            stroke-width: 1;
+        }
+        #world-map-info {
+            margin-top: 1rem;
+            text-align: left;
+            border: 1px solid #222;
+            background: #0d0d0d;
+            padding: 0.8rem 1rem;
+            border-radius: 3px;
+            font-size: 0.85rem;
+            color: #aaa;
+            line-height: 1.6;
+            min-height: 3rem;
+        }
+
+        /* --- ГАЛЕРЕЯ --- */
+        .gallery-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .gallery-card {
+            border: 1px solid #222;
+            background: #0d0d0d;
+            cursor: pointer;
+            overflow: hidden;
+            border-radius: 5px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            transition: border-color 0.3s, transform 0.25s ease, box-shadow 0.25s ease;
+        }
+        .gallery-card:hover {
+            border-color: rgba(212, 175, 55, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.45), 0 0 14px rgba(212, 175, 55, 0.1);
+        }
+
+        .gallery-card img {
+            width: 100%;
+            height: 110px;
+            object-fit: cover;
+            display: block;
+            transition: transform 0.4s ease;
+        }
+        .gallery-card:hover img { transform: scale(1.06); }
+
+        .gallery-caption {
+            font-size: 0.72rem;
+            color: #999;
+            padding: 6px 8px;
+            text-align: center;
+        }
+
+        .lightbox {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.92);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 200;
+            padding: 20px;
+        }
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 75vh;
+            box-shadow: 0 0 40px rgba(212, 175, 55, 0.15);
+        }
+        .lightbox-caption {
+            color: #ccc;
+            margin-top: 1rem;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        /* --- АДМИНКА --- */
+        #admin-login .modal-content { max-width: 340px; text-align: center; }
+        #admin-login input {
+            width: 100%;
+            background: #0d0d0d;
+            border: 1px solid #333;
+            color: #EAEAEA;
+            padding: 10px 12px;
+            font-family: inherit;
+            margin: 1rem 0;
+            border-radius: 2px;
+        }
+        #admin-login input:focus { outline: none; border-color: var(--accent-gold); }
+        #admin-login button, .admin-btn {
+            padding: 10px 24px;
+            background: transparent;
+            border: 1px solid var(--accent-gold);
+            color: var(--accent-gold);
+            font-family: inherit;
+            letter-spacing: 0.1em;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 3px;
+        }
+        #admin-login button:hover, .admin-btn:hover {
+            background: var(--accent-gold);
+            color: #050505;
+            box-shadow: 0 0 18px rgba(212, 175, 55, 0.3);
+            transform: translateY(-1px);
+        }
+        .admin-error {
+            color: #c0392b;
+            font-size: 0.8rem;
+            min-height: 1.2em;
+        }
+
+        #admin-panel .modal-content { max-width: 720px; text-align: left; }
+
+        .admin-tabs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        .admin-tab {
+            padding: 6px 14px;
+            border: 1px solid #333;
+            color: #999;
+            font-size: 0.8rem;
+            cursor: pointer;
+            letter-spacing: 0.05em;
+            border-radius: 2px;
+            transition: all 0.25s;
+        }
+        .admin-tab.active {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
+
+        .admin-entry {
+            border: 1px solid #222;
+            background: #0d0d0d;
+            padding: 1rem;
+            margin-bottom: 0.9rem;
+            border-radius: 3px;
+        }
+        .admin-entry input, .admin-entry textarea {
+            width: 100%;
+            background: #050505;
+            border: 1px solid #2a2a2a;
+            color: #EAEAEA;
+            font-family: inherit;
+            padding: 8px 10px;
+            border-radius: 2px;
+            margin-bottom: 0.6rem;
+            resize: vertical;
+        }
+        .admin-entry input:focus, .admin-entry textarea:focus {
+            outline: none;
+            border-color: var(--accent-gold);
+        }
+        .admin-entry-row {
+            display: flex;
+            justify-content: flex-end;
+        }
+        .admin-delete {
+            background: transparent;
+            border: 1px solid #442222;
+            color: #c0392b;
+            font-size: 0.75rem;
+            padding: 5px 12px;
+            cursor: pointer;
+            border-radius: 2px;
+            letter-spacing: 0.05em;
+        }
+        .admin-delete:hover { background: #c0392b; color: #fff; }
+
+        .admin-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 0.6rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .admin-status {
+            font-size: 0.8rem;
+            color: #4caf50;
+            min-height: 1.2em;
+        }
+        .admin-note {
+            font-size: 0.72rem;
+            color: #555;
+            text-align: center;
+            margin-top: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .settings-toggle {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            font-size: 0.9rem;
+            color: #ccc;
+            padding: 0.55rem 0;
+            border-bottom: 1px solid #1a1a1a;
+            cursor: pointer;
+        }
+        .settings-toggle input {
+            width: 16px;
+            height: 16px;
+            accent-color: var(--accent-gold);
+            cursor: pointer;
+        }
+        #set-volume {
+            accent-color: var(--accent-gold);
+        }
+
+        /* --- ПОЛЬЗОВАТЕЛЬСКИЕ НАСТРОЙКИ: ЭФФЕКТЫ --- */
+        body.no-fog #fog-layer { display: none !important; }
+        body.no-glow .symbol-container { box-shadow: none !important; }
+        body.no-glow .title { text-shadow: none !important; }
+        body.no-glow .modal-content { box-shadow: 0 4px 14px rgba(0,0,0,0.4) !important; }
+        body.no-glow .scroll-item:hover, body.no-glow .timeline-card:hover, body.no-glow .gallery-card:hover {
+            box-shadow: none !important;
+        }
+        body.no-blur .modal { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+        body.no-blur .modal-content { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
+        body.reduce-motion .symbol-svg,
+        body.reduce-motion .logo-svg,
+        body.reduce-motion #fog-layer,
+        body.reduce-motion .modal .modal-content {
+            animation: none !important;
+        }
+        body.reduce-motion .circle-menu { transition: none !important; }
+        body.reduce-motion .gallery-card img { transition: none !important; }
+        
+    </style>
+</head>
+<body>
+
+    <canvas id="particles-canvas"></canvas>
+    <div id="fog-layer"></div>
+    <audio id="bg-music" loop></audio>
+
+    <!-- Стадия 1: Ожидание -->
+    <div id="stage-1" class="hidden">
+        <span class="dots">...</span>
+    </div>
+
+    <!-- Стадия 2: Врата Архива -->
+    <div id="stage-2" class="hidden">
+        <div class="symbol-container">
+            <svg class="symbol-svg" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="1.5">
+                <path d="M12 2L15 8L22 9L17 14L18.5 21L12 17.5L5.5 21L7 14L2 9L9 8L12 2Z"/>
+            </svg>
+        </div>
+        <h1 class="title">ДЕМОН АНГЕЛА</h1>
+        <p class="subtitle">Архив принимает нового Странника.</p>
+        <button class="enter-btn">Войти</button>
+    </div>
+
+    <!-- Стадия 3: Внутри Архива -->
+    <div id="stage-3" class="hidden">
+        <button id="music-btn" title="Музыка Архива">🎵</button>
+        <button id="admin-toggle" title="Панель Хранителя (админка)">⚙</button>
+        <button id="guardian-toggle" title="Спросить Хранителя">🔮</button>
+        <button id="notifications-toggle" title="Уведомления">
+            🔔<span id="notifications-badge" class="hidden">0</span>
+        </button>
+
+        <p id="random-phrase" class="mystic-text"></p>
+        <div id="season-badge" style="position:absolute; top:24px; left:50%; transform:translateX(-50%); font-size:0.72rem; letter-spacing:0.15em; color:var(--accent-gold); border:1px solid var(--accent-gold); padding:4px 12px; border-radius:12px; opacity:0.75; white-space:nowrap;"></div>
+
+        <div class="circle-menu">
+            <div class="center-logo" id="main-logo" title="Спросить Хранителя">
+                <svg class="logo-svg" viewBox="0 0 24 24" fill="none" stroke="#D4AF37" stroke-width="1.5">
+                    <path d="M12 3v18M3 12h18M5 5l14 14M19 5L5 19"/>
+                </svg>
+            </div>
+
+            <div class="menu-item" style="--i:0;" data-target="code">📖 Кодекс</div>
+            <div class="menu-item" style="--i:1;" data-target="precepts">✦ Заповеди</div>
+            <div class="menu-item" style="--i:2;" data-target="chronicle">📜 Хроника</div>
+            <div class="menu-item" style="--i:3;" data-target="world">🌌 Мир</div>
+            <div class="menu-item" style="--i:4;" data-target="gallery">🎨 Галерея</div>
+            <div class="menu-item" style="--i:5;" data-target="messages">💬 Послания</div>
+            <div class="menu-item" style="--i:6;" data-target="profile">👤 Профиль</div>
+            <div class="menu-item" style="--i:7;" data-target="search">🔍 Поиск</div>
+            <div class="menu-item" style="--i:8;" data-target="usersettings">🎛️ Настройки</div>
+        </div>
+    </div>
+
+    <!-- Окно Кодекса -->
+    <div id="modal-code" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-btn" data-close="modal-code">✕</button>
+            <h2 class="modal-title">📖 КОДЕКС АРХИВА</h2>
+            <p class="modal-subtitle">Древние свитки, сохранённые между мирами</p>
+            <div class="scrolls-container" id="code-scrolls"></div>
+        </div>
+    </div>
+
+    <!-- Окно Заповедей -->
+    <div id="modal-precepts" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-btn" data-close="modal-precepts">✕</button>
+            <h2 class="modal-title">✦ ЗАПОВЕДИ</h2>
+            <p class="modal-subtitle">Слова, что хранит Архив</p>
+            <div class="scrolls-container" id="precepts-scrolls"></div>
+        </div>
+    </div>
+
+    <!-- Окно Хроники -->
+    <div id="modal-chronicle" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-btn" data-close="modal-chronicle">✕</button>
+            <h2 class="modal-title">📜 ХРОНИКА</h2>
+            <p class="modal-subtitle">История между мирами</p>
+            <div class="timeline" id="chronicle-timeline"></div>
+        </div>
+    </div>
+
+    <!-- Окно Посланий -->
+    <div id="modal-messages" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-btn" data-close="modal-messages">✕</button>
+            <h2 class="modal-title">💬 ПОСЛАНИЯ</h2>
+            <p class="modal-subtitle">Голоса Архива</p>
+            <div class="scrolls-container" id="messages-scrolls"></div>
+        </div>
+    </div>
+
+    <!-- Окно Мира -->
+    <div id="modal-world" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-btn" data-close="modal-world">✕</button>
+            <h2 class="modal-title">🌌 МИР</h2>
+            <p class="modal-subtitle">Государства, сущности и силы между мирами</p>
+
+            <div class="admin-tabs" style="margin-bottom: 1.2rem;">
+                <div class="admin-tab active" data-world-view="list">📋 Список</div>
+                <div class="admin-tab" data-world-view="map">🌐 Карта связей</div>
+            </div>
+
+            <div class="scrolls-container" id="world-scrolls"></div>
+
+            <div id="world-map-view" class="hidden">
+                <svg id="world-map-svg" viewBox="0 0 400 400" style="width:100%; height:auto; max-height:340px;"></svg>
+                <div id="world-map-info" class="empty-note">Нажми на узел, чтобы увидеть описание.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Окно Галереи -->
+    <div id="modal-gallery" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-btn" data-close="modal-gallery">✕</button>
+            <h2 class="modal-title">🎨 ГАЛЕРЕЯ</h2>
+            <p class="modal-subtitle">Арты и образы Архива</p>
+            <div style="display:flex; gap:0.6rem; margin-bottom:1rem; flex-wrap:wrap;">
+                <input type="text" id="gallery-search" placeholder="Поиск по названию..." style="flex:1; min-width:140px; background:#0d0d0d; border:1px solid #333; color:#EAEAEA; padding:8px 10px; font-family:inherit; border-radius:2px;">
+                <select id="gallery-category-filter" style="background:#0d0d0d; border:1px solid #333; color:#EAEAEA; padding:8px 10px; font-family:inherit; border-radius:2px;">
+                    <option value="">Все категории</option>
+                </select>
+            </div>
+            <div class="gallery-grid" id="gallery-grid"></div>
+        </div>
+    </div>
+
+    <!-- Лайтбокс для галереи -->
+    <div id="lightbox" class="lightbox hidden">
+        <button class="close-btn" data-close="lightbox" style="position:fixed; top:24px; right:24px;">✕</button>
+        <img id="lightbox-img" src="" alt="">
+        <p id="lightbox-caption" class="lightbox-caption"></p>
+    </div>
+
+    <!-- Окно уведомлений -->
+    <div id="modal-notifications" class="modal hidden">
+        <div class="modal-content" style="max-width: 480px;">
+            <button class="close-btn" data-close="modal-notifications">✕</button>
+            <h2 class="modal-title">🔔 УВЕДОМЛЕНИЯ</h2>
+            <p class="modal-subtitle">Что произошло, пока тебя не было</p>
+            <div id="notifications-list" style="text-align:left; max-height:50vh; overflow-y:auto;"></div>
+        </div>
+    </div>
+
+    <!-- Окно настроек атмосферы -->
+    <div id="modal-usersettings" class="modal hidden">
+        <div class="modal-content" style="max-width: 480px;">
+            <button class="close-btn" data-close="modal-usersettings">✕</button>
+            <h2 class="modal-title">🎛️ НАСТРОЙКИ</h2>
+            <p class="modal-subtitle">Архив подстроится под тебя</p>
+
+            <div style="text-align:left;">
+                <label class="settings-toggle"><input type="checkbox" id="set-music"> Музыка</label>
+                <label class="settings-toggle"><input type="checkbox" id="set-sounds"> Звуковые эффекты</label>
+                <label class="settings-toggle"><input type="checkbox" id="set-rain"> Дождь</label>
+                <label class="settings-toggle"><input type="checkbox" id="set-fog"> Туман</label>
+                <label class="settings-toggle"><input type="checkbox" id="set-particles"> Частицы</label>
+                <label class="settings-toggle"><input type="checkbox" id="set-glow"> Свечение</label>
+                <label class="settings-toggle"><input type="checkbox" id="set-blur"> Размытие окон</label>
+                <label class="settings-toggle"><input type="checkbox" id="set-motion"> Полные анимации</label>
+
+                <div style="margin-top:1rem;">
+                    <label style="display:block; color:#aaa; font-size:0.85rem; margin-bottom:0.4rem;">🔊 Громкость</label>
+                    <input type="range" id="set-volume" min="0" max="100" style="width:100%;">
+                </div>
+
+                <div style="margin-top:1.2rem;">
+                    <label style="display:block; color:#aaa; font-size:0.85rem; margin-bottom:0.4rem;">🎨 Тема оформления</label>
+                    <select id="set-theme" style="width:100%; background:#0d0d0d; border:1px solid #333; color:#EAEAEA; padding:8px 10px; font-family:inherit; border-radius:2px;">
+                        <option value="auto">Автоматически (по календарю)</option>
+                        <option value="winter">❄️ Зима</option>
+                        <option value="spring">🌸 Весна</option>
+                        <option value="summer">☀️ Лето</option>
+                        <option value="autumn">🍂 Осень</option>
+                    </select>
+                </div>
+            </div>
+
+            <button class="admin-btn" id="settings-reset" style="width:100%; margin-top:1.5rem; font-size:0.78rem;">Сбросить к значениям по умолчанию</button>
+            <p class="admin-note">Настройки сохраняются в этом браузере и не видны другим посетителям.</p>
+        </div>
+    </div>
+
+    <!-- Окно поиска по всему Архиву -->
+    <div id="modal-search" class="modal hidden">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="close-btn" data-close="modal-search">✕</button>
+            <h2 class="modal-title">🔍 ПОИСК ПО АРХИВУ</h2>
+            <p class="modal-subtitle">Кодекс · Заповеди · Хроника · Мир · Послания · Галерея</p>
+
+            <input type="text" id="search-input" placeholder="Начни печатать..." style="width:100%; background:#0d0d0d; border:1px solid #333; color:#EAEAEA; padding:10px 12px; font-family:inherit; border-radius:2px; margin-bottom:1rem;">
+
+            <div id="search-results" style="text-align:left; max-height:50vh; overflow-y:auto;"></div>
+        </div>
+    </div>
+
+    <!-- Окно Хранителя Архива -->
+    <div id="modal-guardian" class="modal hidden">
+        <div class="modal-content" style="max-width: 600px;">
+            <button class="close-btn" data-close="modal-guardian">✕</button>
+            <div id="guardian-icon" style="font-size:2.2rem; text-align:center; margin-bottom:0.3rem;">🔮</div>
+            <h2 class="modal-title">ХРАНИТЕЛЬ АРХИВА</h2>
+            <p class="modal-subtitle">Спроси о чём угодно, что хранится в Архиве</p>
+
+            <div id="guardian-conversation" style="text-align:left; border:1px solid #222; background:#0d0d0d; padding:1rem; border-radius:5px; max-height:280px; overflow-y:auto; font-size:0.88rem; line-height:1.7; color:#ccc; margin-bottom:1rem;"></div>
+
+            <div style="display:flex; gap:0.6rem; margin-bottom:0.6rem;">
+                <input type="text" id="guardian-input" placeholder="Например: кто такой Демон Ангела?" style="flex:1; background:#0d0d0d; border:1px solid #333; color:#EAEAEA; padding:10px 12px; font-family:inherit; border-radius:2px;">
+                <button class="admin-btn" id="guardian-ask">Спросить</button>
+            </div>
+            <button class="admin-btn" id="guardian-suggest" style="width:100%; margin-bottom:0.6rem; font-size:0.78rem; padding:8px;">🎲 Хранитель советует, что почитать</button>
+
+            <p class="admin-note">
+                Хранитель ищет ответы по всему содержимому Архива — Кодексу, Заповедям, Хронике, Миру и Посланиям.
+                Он не выдумывает — только показывает то, что реально записано.
+                История разговора видна, пока открыта эта страница.
+            </p>
+        </div>
+    </div>
+
+    <!-- Окно входа / регистрации -->
+    <div id="modal-auth" class="modal hidden">
+        <div class="modal-content" style="max-width: 380px; text-align: center;">
+            <button class="close-btn" data-close="modal-auth">✕</button>
+            <h2 class="modal-title">👤 СТРАННИК</h2>
+            <p class="modal-subtitle" id="auth-subtitle">Войди, чтобы Архив запомнил тебя</p>
+
+            <div class="admin-tabs" style="margin-bottom: 1.5rem;">
+                <div class="admin-tab active" data-auth-tab="login">Вход</div>
+                <div class="admin-tab" data-auth-tab="register">Регистрация</div>
+            </div>
+
+            <input type="email" id="auth-email" placeholder="Email" style="width:100%; background:#0d0d0d; border:1px solid #333; color:#EAEAEA; padding:10px 12px; font-family:inherit; margin-bottom:0.8rem; border-radius:2px;">
+            <input type="password" id="auth-password" placeholder="Пароль" style="width:100%; background:#0d0d0d; border:1px solid #333; color:#EAEAEA; padding:10px 12px; font-family:inherit; margin-bottom:0.8rem; border-radius:2px;">
+
+            <p class="admin-error" id="auth-error"></p>
+
+            <button class="admin-btn" id="auth-submit" style="width:100%;">Войти</button>
+            <p class="admin-note" id="auth-note" style="margin-top:1rem;"></p>
+        </div>
+    </div>
+
+    <!-- Окно профиля -->
+    <div id="modal-profile" class="modal hidden">
+        <div class="modal-content" style="max-width: 420px; text-align: center;">
+            <button class="close-btn" data-close="modal-profile">✕</button>
+            <h2 class="modal-title">👤 ПРОФИЛЬ СТРАННИКА</h2>
+
+            <div id="profile-avatar-display" style="font-size: 3rem; margin-bottom: 0.5rem;">👤</div>
+
+            <input type="text" id="profile-nickname" placeholder="Ник" style="width:100%; text-align:center; background:#0d0d0d; border:1px solid #333; color:#EAEAEA; padding:10px 12px; font-family:inherit; margin-bottom:0.8rem; border-radius:2px;">
+
+            <textarea id="profile-bio" placeholder="Расскажи немного о себе..." rows="2" style="width:100%; text-align:center; background:#0d0d0d; border:1px solid #333; color:#EAEAEA; padding:10px 12px; font-family:inherit; margin-bottom:0.8rem; border-radius:2px; resize:vertical;"></textarea>
+
+            <div id="avatar-picker" style="display:flex; justify-content:center; gap:0.5rem; flex-wrap:wrap; margin-bottom:1rem;"></div>
+
+            <button class="admin-btn" id="profile-save" style="width:100%; margin-bottom:1.5rem;">Сохранить профиль</button>
+
+            <div style="text-align:left; font-size:0.85rem; color:#999; line-height:1.8;">
+                <div>📅 В Архиве с: <span id="profile-created"></span></div>
+                <div>🕓 Прошлый визит: <span id="profile-last-visit"></span></div>
+                <div>⭐ Избранных записей: <span id="profile-favorites-count"></span></div>
+                <div>💬 Комментариев написано: <span id="profile-comments-count">…</span></div>
+                <div>❤️ Лайков получено: <span id="profile-likes-received">…</span></div>
+            </div>
+
+            <div id="profile-favorites-list" style="text-align:left; margin-top:1rem; max-height:220px; overflow-y:auto;"></div>
+
+            <div style="text-align:left; margin-top:1.2rem;">
+                <div style="color:#999; font-size:0.85rem; margin-bottom:0.5rem;">🏆 Достижения</div>
+                <div id="profile-achievements" style="display:flex; flex-wrap:wrap; gap:0.5rem;"></div>
+            </div>
+
+            <button class="admin-delete" id="profile-logout" style="margin-top:1.5rem;">Выйти</button>
+        </div>
+    </div>
+
+    <!-- Вход в админку -->
+    <div id="admin-login" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-btn" data-close="admin-login">✕</button>
+            <h2 class="modal-title">🛡 ХРАНИТЕЛЬ</h2>
+            <p class="modal-subtitle">Доступ только для того, кто ведёт Архив</p>
+            <input type="password" id="admin-password" placeholder="Пароль">
+            <p class="admin-error" id="admin-login-error"></p>
+            <button id="admin-login-btn">Войти</button>
+        </div>
+    </div>
+
+    <!-- Панель админки -->
+    <div id="admin-panel" class="modal hidden">
+        <div class="modal-content">
+            <button class="close-btn" data-close="admin-panel">✕</button>
+            <h2 class="modal-title">🛡 ПАНЕЛЬ ХРАНИТЕЛЯ</h2>
+            <p class="modal-subtitle">Редактируй Архив без единой строчки кода</p>
+
+            <div class="admin-tabs">
+                <div class="admin-tab active" data-section="code">📖 Кодекс</div>
+                <div class="admin-tab" data-section="commandments">✦ Заповеди</div>
+                <div class="admin-tab" data-section="chronicles">📜 Хроника</div>
+                <div class="admin-tab" data-section="messages">💬 Послания</div>
+                <div class="admin-tab" data-section="world">🌌 Мир</div>
+                <div class="admin-tab" data-section="gallery">🎨 Галерея</div>
+                <div class="admin-tab" data-section="settings">🎵 Музыка</div>
+                <div class="admin-tab" data-section="users">👥 Пользователи</div>
+            </div>
+
+            <div id="admin-entries"></div>
+
+            <div class="admin-actions">
+                <button class="admin-btn" id="admin-add">+ Добавить запись</button>
+                <button class="admin-btn" id="admin-save">Сохранить</button>
+            </div>
+            <p class="admin-status" id="admin-status"></p>
+
+            <p class="admin-note">
+                Изменения сохраняются в базу данных и видны всем посетителям сайта.
+                Пароль здесь — лёгкий барьер от случайных людей, а не настоящая защита:
+                публичный ключ базы данных виден в коде страницы, и теоретически
+                кто-то может обратиться к базе напрямую, в обход пароля.
+                Полноценная защита потребует настоящей авторизации (Этап 5).
+            </p>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script>
+        // ============================================
+        // SUPABASE — база данных Архива
+        // ============================================
+        // ⚠ Вставь сюда свои значения из Supabase: Project Settings → API
+        const SUPABASE_URL = "https://nwkrolidogfciwjxmmzu.supabase.co";
+        const SUPABASE_ANON_KEY = "sb_publishable_COBvf9CxgbO4jRLrItJJFQ_M8C7wGZa";
+
+        let sb = null;
+        try {
+            if (SUPABASE_URL.startsWith("http") && window.supabase && window.supabase.createClient) {
+                sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+            }
+        } catch (e) {
+            console.error("Не удалось инициализировать Supabase — сайт продолжит работать с данными по умолчанию.", e);
+        }
+
+        // ============================================
+        // ДАННЫЕ ПО УМОЛЧАНИЮ (если в базе ещё ничего нет)
+        // ============================================
+        const defaultData = {
+            code: [
+                {
+                    title: "Статья I: О Грани Миров",
+                    text: "Мир никогда не был делим на абсолютную тьму и слепящий свет. На стыке двух сил существует Разлом — место, где время замедляет свой ход, а истории не забываются."
+                },
+                {
+                    title: "Статья II: Сущность Демона Ангела",
+                    text: "Не важно, ангел ты или демон. Главное — какой ты. Крылья могут отращивать тень, а рога — излучать свет, пока разум помнит свой истинный путь."
+                },
+                {
+                    title: "Статья III: Призыв Странника",
+                    text: "Странник приходит не тогда, когда ищет дорогу, а когда сама дорога начинает искать его. Тот, кто нашёл Архив, уже стал частью легенды."
+                }
+            ],
+            commandments: [
+                { title: "Заповедь I", text: "Не важно, кем ты был создан. Важно, кем ты решил стать." },
+                { title: "Заповедь II", text: "Свет без тьмы ослепляет. Тьма без света поглощает." }
+            ],
+            chronicles: [
+                { year: "2024", title: "Глава I: Пробуждение", text: "Когда границы миров начали разрушаться, появился тот, кого не должно было существовать." },
+                { year: "2025", title: "Глава II: Разлом", text: "Демон и ангел внутри одной сущности начали искать равновесие." }
+            ],
+            messages: [
+                { title: "Послание Страннику", text: "Если ты читаешь это — значит Архив уже заметил тебя." }
+            ],
+            world: [
+                { title: "Разлом", category: "Мир", text: "Пространство между границами реальности, где сходятся тьма и свет. Здесь родился Демон Ангела.", connections: "Орден Пепла" },
+                { title: "Орден Пепла", category: "Организация", text: "Хранители равновесия, следящие за теми, кто пересекает грань миров.", connections: "Разлом" }
+            ],
+            gallery: [],
+            settings: { musicUrl: "" }
+        };
+
+        const SECTION_KEYS = {
+            code: "code",
+            commandments: "commandments",
+            chronicles: "chronicles",
+            messages: "messages",
+            world: "world",
+            gallery: "gallery",
+            settings: "settings"
+        };
+
+        const CONTAINER_IDS = {
+            code: "code-scrolls",
+            commandments: "precepts-scrolls",
+            messages: "messages-scrolls"
+        };
+
+        // Описание полей для каждой секции — админка строит форму по этой схеме
+        const FIELDS = {
+            code: [
+                { key: "title", label: "Заголовок", type: "text" },
+                { key: "text", label: "Текст", type: "textarea" },
+                { key: "published", label: "Опубликовано (видно посетителям)", type: "checkbox" }
+            ],
+            commandments: [
+                { key: "title", label: "Заголовок", type: "text" },
+                { key: "text", label: "Текст", type: "textarea" },
+                { key: "published", label: "Опубликовано (видно посетителям)", type: "checkbox" }
+            ],
+            chronicles: [
+                { key: "year", label: "Год / дата (например 2025)", type: "text" },
+                { key: "title", label: "Заголовок", type: "text" },
+                { key: "text", label: "Текст", type: "textarea" },
+                { key: "published", label: "Опубликовано (видно посетителям)", type: "checkbox" }
+            ],
+            messages: [
+                { key: "title", label: "Заголовок", type: "text" },
+                { key: "text", label: "Текст", type: "textarea" },
+                { key: "published", label: "Опубликовано (видно посетителям)", type: "checkbox" }
+            ],
+            world: [
+                { key: "title", label: "Название", type: "text" },
+                { key: "category", label: "Категория (Мир / Государство / Сущность / Организация)", type: "text" },
+                { key: "text", label: "Описание", type: "textarea" },
+                { key: "connections", label: "Связано с (названия через запятую)", type: "text" },
+                { key: "published", label: "Опубликовано (видно посетителям)", type: "checkbox" }
+            ],
+            gallery: [
+                { key: "title", label: "Название", type: "text" },
+                { key: "category", label: "Категория (арт / концепт / обои и т.д.)", type: "text" },
+                { key: "imageUrl", label: "Ссылка на изображение (или загрузи файл ниже)", type: "text", uploadable: true, accept: "image/*" },
+                { key: "caption", label: "Подпись", type: "textarea" },
+                { key: "published", label: "Опубликовано (видно посетителям)", type: "checkbox" }
+            ]
+        };
+
+        // ⚠ Меняй этот пароль перед публикацией — он лежит открыто в коде страницы.
+        const ADMIN_PASSWORD = "archive2026";
+
+        let archiveData = {};
+
+        // ============================================
+        // ХРАНИЛИЩЕ
+        // ============================================
+        async function loadSection(section) {
+            if (!sb) return JSON.parse(JSON.stringify(defaultData[section]));
+            const rowId = SECTION_KEYS[section];
+            try {
+                const { data, error } = await sb
+                    .from("archive_data")
+                    .select("data")
+                    .eq("id", rowId)
+                    .maybeSingle();
+                if (!error && data && data.data) {
+                    return data.data;
+                }
+            } catch (e) {
+                // База недоступна — используем данные по умолчанию, ничего не записываем.
+            }
+            return JSON.parse(JSON.stringify(defaultData[section]));
+        }
+
+        async function saveSection(section, entries) {
+            if (!sb) return false;
+            const rowId = SECTION_KEYS[section];
+            try {
+                const { error } = await sb
+                    .from("archive_data")
+                    .upsert({ id: rowId, data: entries, updated_at: new Date().toISOString() });
+                return !error;
+            } catch (e) {
+                console.error("Ошибка сохранения", e);
+                return false;
+            }
+        }
+
+        async function loadAllData() {
+            const sections = Object.keys(SECTION_KEYS);
+            for (const section of sections) {
+                archiveData[section] = await loadSection(section);
+            }
+        }
+
+        // ============================================
+        // ИНИЦИАЛИЗАЦИЯ
+        // ============================================
+        document.addEventListener("DOMContentLoaded", () => {
+            // ==========================================
+            // ПОЛЬЗОВАТЕЛЬСКИЕ НАСТРОЙКИ (хранятся в этом браузере)
+            // ==========================================
+            const SETTINGS_DEFAULTS = {
+                music: true,
+                sounds: true,
+                rain: true,
+                fog: true,
+                particles: true,
+                glow: true,
+                blur: true,
+                reduceMotion: false,
+                volume: 70,
+                themeOverride: "auto"
+            };
+            let userSettings = { ...SETTINGS_DEFAULTS };
+
+            function loadUserSettings() {
+                try {
+                    const raw = localStorage.getItem("archive-user-settings");
+                    if (raw) userSettings = { ...SETTINGS_DEFAULTS, ...JSON.parse(raw) };
+                } catch (e) {
+                    userSettings = { ...SETTINGS_DEFAULTS };
+                }
+            }
+
+            function saveUserSettings() {
+                try {
+                    localStorage.setItem("archive-user-settings", JSON.stringify(userSettings));
+                } catch (e) {
+                    // localStorage недоступен (приватный режим и т.п.) — настройки просто не сохранятся между визитами
+                }
+            }
+
+            function applyUserSettings() {
+                document.body.classList.toggle("no-fog", !userSettings.fog);
+                document.body.classList.toggle("no-glow", !userSettings.glow);
+                document.body.classList.toggle("no-blur", !userSettings.blur);
+                document.body.classList.toggle("reduce-motion", !!userSettings.reduceMotion);
+
+                if (typeof bgMusic !== "undefined" && bgMusic) {
+                    bgMusic.volume = userSettings.volume / 100;
+                }
+                if (typeof musicBtn !== "undefined" && musicBtn) {
+                    musicBtn.style.display = (userSettings.music && bgMusic && bgMusic.src) ? "block" : "none";
+                    if (!userSettings.music && typeof bgMusic !== "undefined" && bgMusic) {
+                        bgMusic.pause();
+                    }
+                }
+            }
+
+            loadUserSettings();
+
+            // ==========================================
+            // СЕЗОННАЯ ТЕМА (сезон + день/ночь + день рождения)
+            // ==========================================
+            let accentGoldRGB = "212, 175, 55"; // используется частицами, обновится после применения темы
+            let currentSeasonKey = "summer";
+            let isBirthdayToday = false;
+
+            function hexToRgbString(hex) {
+                hex = hex.trim().replace('#', '');
+                if (hex.length === 3) hex = hex.split('').map(c => c + c).join('');
+                const num = parseInt(hex, 16);
+                if (isNaN(num)) return "212, 175, 55";
+                return `${(num >> 16) & 255}, ${(num >> 8) & 255}, ${num & 255}`;
+            }
+
+            function determineTheme() {
+                const now = new Date();
+                const month = now.getMonth() + 1;
+                const day = now.getDate();
+                const hour = now.getHours();
+                const time = (hour >= 6 && hour < 18) ? "day" : "night";
+
+                if (userSettings.themeOverride && userSettings.themeOverride !== "auto") {
+                    return { season: userSettings.themeOverride, time };
+                }
+
+                if (month === 10 && day === 23) {
+                    return { season: "birthday", time: null };
+                }
+                let season;
+                if ([12, 1, 2].includes(month)) season = "winter";
+                else if ([3, 4, 5].includes(month)) season = "spring";
+                else if ([6, 7, 8].includes(month)) season = "summer";
+                else season = "autumn";
+                return { season, time };
+            }
+
+            function applySeasonalTheme() {
+                const { season, time } = determineTheme();
+                document.body.classList.remove(
+                    "theme-winter", "theme-spring", "theme-summer", "theme-autumn", "theme-birthday",
+                    "time-day", "time-night"
+                );
+                if (season === "birthday") {
+                    document.body.classList.add("theme-birthday");
+                    isBirthdayToday = true;
+                    currentSeasonKey = "birthday";
+                } else {
+                    document.body.classList.add("theme-" + season, "time-" + time);
+                    currentSeasonKey = season;
+                }
+                requestAnimationFrame(() => {
+                    const goldHex = getComputedStyle(document.body).getPropertyValue("--accent-gold").trim();
+                    if (goldHex) accentGoldRGB = hexToRgbString(goldHex);
+                });
+            }
+
+            applySeasonalTheme();
+
+            const SEASON_BADGE_LABELS = {
+                winter: "❄️ Зима",
+                spring: "🌸 Весна",
+                summer: "☀️ Лето",
+                autumn: "🍂 Осень",
+                birthday: "🎂 День рождения Демона Ангела"
+            };
+            const TIME_BADGE_LABELS = { day: "День", night: "Ночь" };
+
+            function updateSeasonBadge() {
+                const badge = document.getElementById("season-badge");
+                if (!badge) return;
+                let label = SEASON_BADGE_LABELS[currentSeasonKey] || "";
+                if (currentSeasonKey !== "birthday") {
+                    const timeClass = document.body.classList.contains("time-night") ? "night" : "day";
+                    label += " · " + TIME_BADGE_LABELS[timeClass];
+                }
+                badge.textContent = label;
+            }
+            updateSeasonBadge();
+
+            const stage1 = document.getElementById("stage-1");
+            const stage2 = document.getElementById("stage-2");
+            const stage3 = document.getElementById("stage-3");
+            const enterBtn = document.querySelector(".enter-btn");
+            const phraseContainer = document.getElementById("random-phrase");
+
+            const archivePhrases = [
+                "«Если ты здесь — значит, между мирами снова появилась трещина.»",
+                "«Архив открывается не каждому. Возможно, ты оказался здесь не случайно.»",
+                "«Некоторые ответы можно найти только молча.»",
+                "«Ты читаешь Архив. А Архив изучает тебя.»",
+                "«Не каждый, кто приходит в Архив, ищет ответы. Иногда Архив сам выбирает, кому их показать.»"
+            ];
+
+            setTimeout(() => {
+                stage1.classList.remove("hidden");
+                stage1.classList.add("fade-in");
+            }, 1500);
+
+            setTimeout(() => {
+                stage1.classList.add("hidden");
+                stage2.classList.remove("hidden");
+                stage2.classList.add("fade-in");
+            }, 4000);
+
+            enterBtn.addEventListener("click", async () => {
+                stage2.classList.add("hidden");
+
+                const randomElement = isBirthdayToday
+                    ? "🎂 Сегодня особенный день — Архив празднует день рождения Демона Ангела."
+                    : archivePhrases[Math.floor(Math.random() * archivePhrases.length)];
+                phraseContainer.textContent = randomElement;
+
+                stage3.classList.remove("hidden");
+                stage3.classList.add("fade-in");
+
+                playChime();
+
+                try {
+                    await loadAllData();
+                    renderAllScrolls();
+                    applyMusicSettings();
+                    await refreshSession();
+                    renderAllScrolls();
+                } catch (e) {
+                    console.error("Архив открылся, но часть данных не загрузилась:", e);
+                }
+            });
+
+            // ==========================================
+            // ОТРИСОВКА СВИТКОВ
+            // ==========================================
+            function renderAllScrolls() {
+                renderScrolls("code");
+                renderScrolls("commandments");
+                renderChronicle();
+                renderScrolls("messages");
+                renderWorld();
+                renderGallery();
+            }
+
+            function renderChronicle() {
+                const container = document.getElementById("chronicle-timeline");
+                container.innerHTML = "";
+                const items = (archiveData.chronicles || []).filter(i => i.published !== false);
+                if (items.length === 0) {
+                    const note = document.createElement("p");
+                    note.className = "empty-note";
+                    note.textContent = "Хроника пока пуста.";
+                    container.appendChild(note);
+                    return;
+                }
+                items.forEach(item => {
+                    const wrap = document.createElement("div");
+                    wrap.className = "timeline-item";
+                    const isFav = favoriteKeys.has(favKey("chronicles", item.title));
+                    wrap.innerHTML = `
+                        <div class="timeline-dot"></div>
+                        ${item.year ? `<div class="timeline-year">${escapeHtml(item.year)}</div>` : ""}
+                        <div class="timeline-card">
+                            <div class="timeline-header">
+                                <span>
+                                    <span class="fav-star" title="В избранное">${isFav ? "★" : "☆"}</span>
+                                    ${escapeHtml(item.title)}
+                                </span>
+                                <span class="scroll-icon">+</span>
+                            </div>
+                            <div class="timeline-body hidden">
+                                <p>${escapeHtml(item.text)}</p>
+                            </div>
+                        </div>
+                    `;
+                    attachComments(wrap.querySelector(".timeline-body"), "chronicles", item.title);
+                    const starEl = wrap.querySelector(".fav-star");
+                    starEl.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        toggleFavorite("chronicles", item.title);
+                    });
+                    const header = wrap.querySelector(".timeline-header");
+                    header.addEventListener("click", () => {
+                        playPageTurn();
+                        const body = wrap.querySelector(".timeline-body");
+                        const icon = wrap.querySelector(".scroll-icon");
+                        if (body.classList.contains("hidden")) {
+                            body.classList.remove("hidden");
+                            icon.textContent = "−";
+                        } else {
+                            body.classList.add("hidden");
+                            icon.textContent = "+";
+                        }
+                    });
+                    container.appendChild(wrap);
+                });
+            }
+
+            function renderWorld() {
+                const container = document.getElementById("world-scrolls");
+                container.innerHTML = "";
+                const items = (archiveData.world || []).filter(i => i.published !== false);
+                if (items.length === 0) {
+                    const note = document.createElement("p");
+                    note.className = "empty-note";
+                    note.textContent = "Карта миров пока пуста.";
+                    container.appendChild(note);
+                    return;
+                }
+                items.forEach(item => {
+                    const div = document.createElement("div");
+                    div.className = "scroll-item";
+                    const isFav = favoriteKeys.has(favKey("world", item.title));
+                    div.innerHTML = `
+                        <div class="scroll-header">
+                            <span>
+                                <span class="fav-star" title="В избранное">${isFav ? "★" : "☆"}</span>
+                                ${escapeHtml(item.title)}${item.category ? `<span class="category-badge">${escapeHtml(item.category)}</span>` : ""}
+                            </span>
+                            <span class="scroll-icon">+</span>
+                        </div>
+                        <div class="scroll-body hidden">
+                            <p>${escapeHtml(item.text)}</p>
+                        </div>
+                    `;
+                    attachComments(div.querySelector(".scroll-body"), "world", item.title);
+                    const starEl = div.querySelector(".fav-star");
+                    starEl.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        toggleFavorite("world", item.title);
+                    });
+                    const header = div.querySelector(".scroll-header");
+                    header.addEventListener("click", () => {
+                        playPageTurn();
+                        const body = div.querySelector(".scroll-body");
+                        const icon = div.querySelector(".scroll-icon");
+                        if (body.classList.contains("hidden")) {
+                            body.classList.remove("hidden");
+                            icon.textContent = "−";
+                        } else {
+                            body.classList.add("hidden");
+                            icon.textContent = "+";
+                        }
+                    });
+                    container.appendChild(div);
+                });
+            }
+
+            function renderWorldMap() {
+                const svg = document.getElementById("world-map-svg");
+                const info = document.getElementById("world-map-info");
+                svg.innerHTML = "";
+                const items = (archiveData.world || []).filter(i => i.published !== false);
+
+                if (items.length === 0) {
+                    info.textContent = "Карта миров пока пуста.";
+                    return;
+                }
+                info.textContent = "Нажми на узел, чтобы увидеть описание.";
+
+                const cx = 200, cy = 200, radius = 150;
+                const positions = {};
+                items.forEach((item, i) => {
+                    const angle = (2 * Math.PI * i) / items.length - Math.PI / 2;
+                    positions[item.title] = {
+                        x: cx + radius * Math.cos(angle),
+                        y: cy + radius * Math.sin(angle)
+                    };
+                });
+
+                // Линии связей — сначала, чтобы узлы были поверх линий
+                const drawnPairs = new Set();
+                items.forEach(item => {
+                    const links = (item.connections || "").split(",").map(s => s.trim()).filter(Boolean);
+                    links.forEach(target => {
+                        if (!positions[target]) return; // связь на несуществующую запись — игнорируем
+                        const pairKey = [item.title, target].sort().join("::");
+                        if (drawnPairs.has(pairKey)) return;
+                        drawnPairs.add(pairKey);
+                        const a = positions[item.title], b = positions[target];
+                        const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                        line.setAttribute("x1", a.x); line.setAttribute("y1", a.y);
+                        line.setAttribute("x2", b.x); line.setAttribute("y2", b.y);
+                        line.setAttribute("class", "world-link-line");
+                        svg.appendChild(line);
+                    });
+                });
+
+                // Узлы
+                items.forEach(item => {
+                    const pos = positions[item.title];
+                    const g = document.createElementNS("http://www.w3.org/2000/svg", "g");
+
+                    const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                    circle.setAttribute("cx", pos.x);
+                    circle.setAttribute("cy", pos.y);
+                    circle.setAttribute("r", 16);
+                    circle.setAttribute("class", "world-node-circle");
+                    g.appendChild(circle);
+
+                    const label = document.createElementNS("http://www.w3.org/2000/svg", "text");
+                    label.setAttribute("x", pos.x);
+                    label.setAttribute("y", pos.y + 28);
+                    label.setAttribute("class", "world-node-label");
+                    label.textContent = item.title.length > 14 ? item.title.slice(0, 13) + "…" : item.title;
+                    g.appendChild(label);
+
+                    g.style.cursor = "pointer";
+                    g.addEventListener("click", () => {
+                        svg.querySelectorAll(".world-node-circle").forEach(c => c.classList.remove("active"));
+                        circle.classList.add("active");
+                        info.innerHTML = `
+                            <strong style="color:#D4AF37;">${escapeHtml(item.title)}</strong>
+                            ${item.category ? `<span class="category-badge">${escapeHtml(item.category)}</span>` : ""}
+                            <p style="margin-top:0.4rem;">${escapeHtml(item.text || "")}</p>
+                        `;
+                    });
+
+                    svg.appendChild(g);
+                });
+            }
+
+            document.querySelectorAll("[data-world-view]").forEach(tab => {
+                tab.addEventListener("click", () => {
+                    document.querySelectorAll("[data-world-view]").forEach(t => t.classList.remove("active"));
+                    tab.classList.add("active");
+                    const view = tab.getAttribute("data-world-view");
+                    document.getElementById("world-scrolls").classList.toggle("hidden", view !== "list");
+                    document.getElementById("world-map-view").classList.toggle("hidden", view !== "map");
+                    if (view === "map") renderWorldMap();
+                });
+            });
+
+            function renderGallery() {
+                const grid = document.getElementById("gallery-grid");
+                const searchInput = document.getElementById("gallery-search");
+                const categorySelect = document.getElementById("gallery-category-filter");
+                const allItems = (archiveData.gallery || []).filter(i => i.published !== false);
+
+                // Обновляем список категорий в фильтре
+                const categories = [...new Set(allItems.map(i => i.category).filter(Boolean))];
+                const currentFilterValue = categorySelect.value;
+                categorySelect.innerHTML = '<option value="">Все категории</option>' +
+                    categories.map(c => `<option value="${escapeAttrGlobal(c)}">${escapeHtml(c)}</option>`).join("");
+                if (categories.includes(currentFilterValue)) {
+                    categorySelect.value = currentFilterValue;
+                }
+
+                const searchTerm = (searchInput.value || "").trim().toLowerCase();
+                const categoryFilter = categorySelect.value;
+
+                const items = allItems.filter(item => {
+                    const matchesSearch = !searchTerm || (item.title || "").toLowerCase().includes(searchTerm);
+                    const matchesCategory = !categoryFilter || item.category === categoryFilter;
+                    return matchesSearch && matchesCategory;
+                });
+
+                grid.innerHTML = "";
+                if (allItems.length === 0) {
+                    const note = document.createElement("p");
+                    note.className = "empty-note";
+                    note.textContent = "Галерея пока пуста. Добавь изображения через панель Хранителя.";
+                    grid.appendChild(note);
+                    return;
+                }
+                if (items.length === 0) {
+                    const note = document.createElement("p");
+                    note.className = "empty-note";
+                    note.textContent = "Ничего не найдено по такому запросу.";
+                    grid.appendChild(note);
+                    return;
+                }
+                items.forEach(item => {
+                    const card = document.createElement("div");
+                    card.className = "gallery-card";
+                    card.innerHTML = `
+                        <img src="${escapeAttrGlobal(item.imageUrl)}" alt="${escapeAttrGlobal(item.title)}" loading="lazy">
+                        <div class="gallery-caption">
+                            ${escapeHtml(item.title)}
+                            ${item.category ? `<span class="category-badge" style="margin-left:4px;">${escapeHtml(item.category)}</span>` : ""}
+                        </div>
+                    `;
+                    card.addEventListener("click", () => openLightbox(item));
+                    grid.appendChild(card);
+                });
+            }
+
+            document.getElementById("gallery-search").addEventListener("input", renderGallery);
+            document.getElementById("gallery-category-filter").addEventListener("change", renderGallery);
+
+            function openLightbox(item) {
+                document.getElementById("lightbox-img").src = item.imageUrl || "";
+                document.getElementById("lightbox-img").alt = item.title || "";
+                document.getElementById("lightbox-caption").textContent = item.caption || item.title || "";
+                openModal("lightbox");
+            }
+
+            function escapeAttrGlobal(str) {
+                return (str || "").replace(/"/g, "&quot;");
+            }
+
+            function renderScrolls(section) {
+                const container = document.getElementById(CONTAINER_IDS[section]);
+                container.innerHTML = "";
+                const items = (archiveData[section] || []).filter(i => i.published !== false);
+                if (items.length === 0) {
+                    const note = document.createElement("p");
+                    note.className = "empty-note";
+                    note.textContent = "Архив пока молчит. Здесь пока нет записей.";
+                    container.appendChild(note);
+                    return;
+                }
+                items.forEach(item => {
+                    container.appendChild(createScrollItem(section, item.title, item.text));
+                });
+            }
+
+            function createScrollItem(section, title, text) {
+                const div = document.createElement("div");
+                div.className = "scroll-item";
+                const isFav = favoriteKeys.has(favKey(section, title));
+                div.innerHTML = `
+                    <div class="scroll-header">
+                        <span>
+                            <span class="fav-star" title="В избранное">${isFav ? "★" : "☆"}</span>
+                            ${escapeHtml(title)}
+                        </span>
+                        <span class="scroll-icon">+</span>
+                    </div>
+                    <div class="scroll-body hidden">
+                        <p>${escapeHtml(text)}</p>
+                    </div>
+                `;
+                attachComments(div.querySelector(".scroll-body"), section, title);
+                const starEl = div.querySelector(".fav-star");
+                starEl.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    toggleFavorite(section, title);
+                });
+                const header = div.querySelector(".scroll-header");
+                header.addEventListener("click", () => {
+                    playPageTurn();
+                    const body = div.querySelector(".scroll-body");
+                    const icon = div.querySelector(".scroll-icon");
+                    if (body.classList.contains("hidden")) {
+                        body.classList.remove("hidden");
+                        icon.textContent = "−";
+                    } else {
+                        body.classList.add("hidden");
+                        icon.textContent = "+";
+                    }
+                });
+                return div;
+            }
+
+            function escapeHtml(str) {
+                const d = document.createElement("div");
+                d.textContent = str == null ? "" : str;
+                return d.innerHTML;
+            }
+
+            // ==========================================
+            // ЛОГИКА МЕНЮ И МОДАЛЕЙ
+            // ==========================================
+            const EXPLORABLE_TARGETS = ["code", "precepts", "chronicle", "world", "gallery", "messages"];
+
+            const menuItems = document.querySelectorAll(".menu-item");
+            menuItems.forEach(item => {
+                item.addEventListener("click", () => {
+                    const target = item.getAttribute("data-target");
+                    if (target === "profile") {
+                        openProfileOrAuth();
+                        return;
+                    }
+                    if (target === "code") {
+                        unlockAchievement("read_codex");
+                    }
+                    if (EXPLORABLE_TARGETS.includes(target)) {
+                        exploredSections.add(target);
+                        if (exploredSections.size === EXPLORABLE_TARGETS.length) {
+                            unlockAchievement("explorer");
+                        }
+                    }
+                    openModal(`modal-${target}`);
+                });
+            });
+
+            function openGuardianFromAnywhere() {
+                document.querySelectorAll(".modal").forEach(m => {
+                    if (m.id !== "modal-guardian") m.classList.add("hidden");
+                });
+                openModal("modal-guardian");
+                initGuardianConversation();
+                document.getElementById("guardian-input").focus();
+                const icon = document.getElementById("guardian-icon");
+                icon.style.animation = "none";
+                requestAnimationFrame(() => { icon.style.animation = "guardianAppear 0.6s ease-out"; });
+            }
+
+            document.getElementById("main-logo").addEventListener("click", openGuardianFromAnywhere);
+            document.getElementById("guardian-toggle").addEventListener("click", openGuardianFromAnywhere);
+
+            // ==========================================
+            // ХРАНИТЕЛЬ АРХИВА — персонаж
+            // ==========================================
+            const STOP_WORDS = new Set(["кто", "что", "такой", "такая", "такое", "это", "как", "где", "и", "в", "на", "с", "о", "об", "про", "мне", "ты", "мне", "все", "все", "есть", "ли", "по", "для", "а", "не"]);
+            const GUARDIAN_SECTION_LABELS = {
+                code: "📖 Кодекс",
+                commandments: "✦ Заповеди",
+                chronicles: "📜 Хроника",
+                messages: "💬 Послания",
+                world: "🌌 Мир",
+                gallery: "🎨 Галерея"
+            };
+
+            const DAILY_PHRASES = [
+                "Каждая запись в Архиве ждала своего читателя дольше, чем ты думаешь.",
+                "Границы миров тоньше всего в тишине между вопросом и ответом.",
+                "Я храню не только слова — я храню то, зачем их искали.",
+                "Странник, который возвращается — уже не тот, кем вошёл впервые.",
+                "Не всякая тайна Архива готова открыться с первого вопроса.",
+                "Свет и тьма здесь не враги — они соавторы одной истории.",
+                "Я помню каждого, кто спрашивал искренне.",
+                "Некоторые записи меняют смысл в зависимости от того, кто их читает."
+            ];
+
+            let guardianGreeted = false;
+
+            function dayOfYear() {
+                const now = new Date();
+                const start = new Date(now.getFullYear(), 0, 0);
+                const diff = now - start;
+                return Math.floor(diff / 86400000);
+            }
+
+            function getDailyPhrase() {
+                return DAILY_PHRASES[dayOfYear() % DAILY_PHRASES.length];
+            }
+
+            function guardianGreetingText() {
+                const name = (currentUser && currentProfile && currentProfile.nickname) ? currentProfile.nickname : null;
+                const hour = new Date().getHours();
+                let timeGreeting = "Приветствую";
+                if (hour >= 5 && hour < 12) timeGreeting = "Доброе утро";
+                else if (hour >= 12 && hour < 18) timeGreeting = "Добрый день";
+                else if (hour >= 18 && hour < 23) timeGreeting = "Добрый вечер";
+                else timeGreeting = "Не спится, Странник?";
+                return name ? `${timeGreeting}, ${name}.` : `${timeGreeting}, Странник.`;
+            }
+
+            function initGuardianConversation() {
+                if (guardianGreeted) return; // не повторяем приветствие внутри одной сессии
+                guardianGreeted = true;
+                const box = document.getElementById("guardian-conversation");
+                box.innerHTML = `
+                    <div class="guardian-msg" style="margin-bottom:0.8rem;">
+                        <div style="color:var(--accent-gold); margin-bottom:0.3rem;">🔮 Хранитель</div>
+                        <div>${escapeHtml(guardianGreetingText())} ${escapeHtml(getDailyPhrase())}</div>
+                    </div>
+                `;
+            }
+
+            function appendGuardianExchange(userText, guardianHtml) {
+                const box = document.getElementById("guardian-conversation");
+                const entry = document.createElement("div");
+                entry.className = "guardian-msg";
+                entry.style.marginBottom = "0.8rem";
+                entry.innerHTML = `
+                    <div style="color:#888; margin-bottom:0.3rem;">Ты спросил</div>
+                    <div style="color:#ccc; margin-bottom:0.6rem;">${escapeHtml(userText)}</div>
+                    <div style="color:var(--accent-gold); margin-bottom:0.3rem;">🔮 Хранитель</div>
+                    <div>${guardianHtml}</div>
+                `;
+                box.appendChild(entry);
+                box.scrollTop = box.scrollHeight;
+            }
+
+            function searchArchive(query) {
+                const words = query
+                    .toLowerCase()
+                    .replace(/[^\wа-яё\s]/gi, "")
+                    .split(/\s+/)
+                    .filter(w => w.length > 2 && !STOP_WORDS.has(w))
+                    .map(w => w.length > 4 ? w.slice(0, w.length - 2) : w);
+
+                if (words.length === 0) return { words, matches: [] };
+
+                const sections = ["code", "commandments", "chronicles", "world", "messages"];
+                const matches = [];
+                sections.forEach(section => {
+                    (archiveData[section] || []).filter(i => i.published !== false).forEach(item => {
+                        const haystack = ((item.title || "") + " " + (item.text || "")).toLowerCase();
+                        const hitCount = words.filter(w => haystack.includes(w)).length;
+                        if (hitCount > 0) matches.push({ section, item, hitCount });
+                    });
+                });
+                matches.sort((a, b) => b.hitCount - a.hitCount);
+                return { words, matches };
+            }
+
+            function renderMatchesHtml(matches, containerId) {
+                if (matches.length === 0) {
+                    return `<span style="color:#888; font-style:italic;">Архив хранит молчание об этом — таких записей пока нет.</span>`;
+                }
+                const topMatches = matches.slice(0, 5);
+                const html = `
+                    <div style="margin-bottom:0.5rem;">Архив нашёл ${matches.length} ${matches.length === 1 ? "запись" : "записей"}:</div>
+                    ${topMatches.map((m, i) => `
+                        <div class="guardian-result" data-idx="${i}" data-container="${containerId}" style="border:1px solid #222; padding:0.5rem 0.7rem; margin-bottom:0.4rem; border-radius:3px; cursor:pointer;">
+                            <span style="color:#eaeaea;">${escapeHtml(m.item.title)}</span> <span style="color:#666; font-size:0.72rem;">— ${GUARDIAN_SECTION_LABELS[m.section]}</span>
+                        </div>
+                    `).join("")}
+                `;
+                window["__guardianMatches_" + containerId] = topMatches;
+                return html;
+            }
+
+            function askGuardian() {
+                const input = document.getElementById("guardian-input");
+                const query = input.value.trim();
+                if (!query) return;
+                initGuardianConversation();
+
+                const { words, matches } = searchArchive(query);
+                const containerId = "c" + Date.now();
+                let html;
+                if (words.length === 0) {
+                    html = `<span style="color:#888; font-style:italic;">Сформулируй вопрос чуть подробнее.</span>`;
+                } else {
+                    html = renderMatchesHtml(matches, containerId);
+                }
+                appendGuardianExchange(query, html);
+                input.value = "";
+
+                // навешиваем обработчики на только что добавленные результаты
+                const box = document.getElementById("guardian-conversation");
+                box.querySelectorAll(`.guardian-result[data-container="${containerId}"]`).forEach(el => {
+                    el.addEventListener("click", () => {
+                        const idx = Number(el.dataset.idx);
+                        const m = window["__guardianMatches_" + containerId][idx];
+                        closeModal("modal-guardian");
+                        openModal(SECTION_MODAL_IDS[m.section] || `modal-${m.section}`);
+                    });
+                });
+            }
+
+            function guardianSuggest() {
+                initGuardianConversation();
+                const sections = ["code", "commandments", "chronicles", "world", "messages"];
+                const pool = [];
+                sections.forEach(section => {
+                    (archiveData[section] || []).filter(i => i.published !== false).forEach(item => pool.push({ section, item }));
+                });
+                if (pool.length === 0) {
+                    appendGuardianExchange("Что почитать?", `<span style="color:#888; font-style:italic;">Архив пока пуст — нечего посоветовать.</span>`);
+                    return;
+                }
+                const pick = pool[Math.floor(Math.random() * pool.length)];
+                const containerId = "s" + Date.now();
+                const html = `
+                    <div>Загляни сюда:</div>
+                    <div class="guardian-result" data-idx="0" data-container="${containerId}" style="border:1px solid #222; padding:0.5rem 0.7rem; margin-top:0.4rem; border-radius:3px; cursor:pointer;">
+                        <span style="color:#eaeaea;">${escapeHtml(pick.item.title)}</span> <span style="color:#666; font-size:0.72rem;">— ${GUARDIAN_SECTION_LABELS[pick.section]}</span>
+                    </div>
+                `;
+                window["__guardianMatches_" + containerId] = [pick];
+                appendGuardianExchange("Что почитать?", html);
+                const box = document.getElementById("guardian-conversation");
+                box.querySelector(`.guardian-result[data-container="${containerId}"]`).addEventListener("click", () => {
+                    closeModal("modal-guardian");
+                    openModal(SECTION_MODAL_IDS[pick.section] || `modal-${pick.section}`);
+                });
+            }
+
+            document.getElementById("guardian-ask").addEventListener("click", askGuardian);
+            document.getElementById("guardian-suggest").addEventListener("click", guardianSuggest);
+            document.getElementById("guardian-input").addEventListener("keydown", (e) => {
+                if (e.key === "Enter") askGuardian();
+            });
+
+            // ==========================================
+            // ПОИСК ПО ВСЕМУ АРХИВУ (живой, включая Галерею)
+            // ==========================================
+            function stemWord(w) {
+                return w.length > 4 ? w.slice(0, w.length - 2) : w;
+            }
+
+            function liveSearch() {
+                const query = document.getElementById("search-input").value.trim();
+                const resultsBox = document.getElementById("search-results");
+
+                if (!query) {
+                    resultsBox.innerHTML = `<p class="empty-note">Начни печатать, чтобы найти записи, статьи или изображения.</p>`;
+                    return;
+                }
+
+                const words = query
+                    .toLowerCase()
+                    .replace(/[^\wа-яё\s]/gi, "")
+                    .split(/\s+/)
+                    .filter(w => w.length > 1 && !STOP_WORDS.has(w))
+                    .map(stemWord);
+
+                if (words.length === 0) {
+                    resultsBox.innerHTML = `<p class="empty-note">Введи хотя бы одно слово.</p>`;
+                    return;
+                }
+
+                const textSections = ["code", "commandments", "chronicles", "world", "messages"];
+                const matches = [];
+
+                textSections.forEach(section => {
+                    (archiveData[section] || []).filter(i => i.published !== false).forEach(item => {
+                        const haystack = ((item.title || "") + " " + (item.text || "")).toLowerCase();
+                        const hitCount = words.filter(w => haystack.includes(w)).length;
+                        if (hitCount > 0) matches.push({ section, item, hitCount });
+                    });
+                });
+
+                (archiveData.gallery || []).filter(i => i.published !== false).forEach(item => {
+                    const haystack = ((item.title || "") + " " + (item.caption || "") + " " + (item.category || "")).toLowerCase();
+                    const hitCount = words.filter(w => haystack.includes(w)).length;
+                    if (hitCount > 0) matches.push({ section: "gallery", item, hitCount });
+                });
+
+                matches.sort((a, b) => b.hitCount - a.hitCount);
+
+                if (matches.length === 0) {
+                    resultsBox.innerHTML = `<p class="empty-note">Ничего не найдено.</p>`;
+                    return;
+                }
+
+                resultsBox.innerHTML = matches.map(m => `
+                    <div class="search-result" data-section="${m.section}" style="border:1px solid #222; background:#0d0d0d; padding:0.7rem 0.9rem; margin-bottom:0.5rem; border-radius:3px; cursor:pointer;">
+                        <div style="color:#eaeaea; font-size:0.9rem;">${escapeHtml(m.item.title)} <span style="color:#666; font-size:0.75rem;">— ${GUARDIAN_SECTION_LABELS[m.section]}</span></div>
+                        ${m.item.text ? `<div style="color:#999; font-size:0.8rem; margin-top:0.3rem;">${escapeHtml(m.item.text.slice(0, 100))}${m.item.text.length > 100 ? "…" : ""}</div>` : ""}
+                    </div>
+                `).join("");
+
+                resultsBox.querySelectorAll(".search-result").forEach((el, idx) => {
+                    el.addEventListener("click", () => {
+                        closeModal("modal-search");
+                        openModal(SECTION_MODAL_IDS[matches[idx].section] || `modal-${matches[idx].section}`);
+                    });
+                });
+            }
+
+            document.getElementById("search-input").addEventListener("input", liveSearch);
+            document.querySelectorAll('.menu-item[data-target="search"]').forEach(item => {
+                item.addEventListener("click", () => {
+                    setTimeout(() => document.getElementById("search-input").focus(), 100);
+                });
+            });
+
+            document.querySelectorAll("[data-close]").forEach(btn => {
+                btn.addEventListener("click", () => {
+                    closeModal(btn.getAttribute("data-close"));
+                });
+            });
+
+            function openModal(id) {
+                const modal = document.getElementById(id);
+                if (modal) {
+                    modal.classList.remove("hidden");
+                    modal.classList.add("fade-in");
+                }
+            }
+            function closeModal(id) {
+                const modal = document.getElementById(id);
+                if (modal) modal.classList.add("hidden");
+            }
+
+            // Звуковая атмосфера — синтезируется на лету, без внешних файлов
+            let audioCtx = null;
+            function getAudioCtx() {
+                if (!audioCtx) {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                }
+                return audioCtx;
+            }
+
+            function playChime() {
+                if (!userSettings.sounds) return;
+                try {
+                    const ctx = getAudioCtx();
+                    const now = ctx.currentTime;
+                    const vol = userSettings.volume / 100;
+                    [523.25, 659.25, 783.99].forEach((freq, i) => {
+                        const osc = ctx.createOscillator();
+                        const gain = ctx.createGain();
+                        osc.type = "sine";
+                        osc.frequency.value = freq;
+                        gain.gain.setValueAtTime(0, now + i * 0.15);
+                        gain.gain.linearRampToValueAtTime(0.06 * vol, now + i * 0.15 + 0.05);
+                        gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.15 + 1.8);
+                        osc.connect(gain).connect(ctx.destination);
+                        osc.start(now + i * 0.15);
+                        osc.stop(now + i * 0.15 + 1.9);
+                    });
+                } catch (e) { /* аудио недоступно — молча пропускаем */ }
+            }
+
+            function playPageTurn() {
+                if (!userSettings.sounds) return;
+                try {
+                    const ctx = getAudioCtx();
+                    const now = ctx.currentTime;
+                    const vol = userSettings.volume / 100;
+                    const bufferSize = ctx.sampleRate * 0.12;
+                    const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+                    const data = buffer.getChannelData(0);
+                    for (let i = 0; i < bufferSize; i++) {
+                        data[i] = (Math.random() * 2 - 1) * (1 - i / bufferSize);
+                    }
+                    const noise = ctx.createBufferSource();
+                    noise.buffer = buffer;
+                    const filter = ctx.createBiquadFilter();
+                    filter.type = "highpass";
+                    filter.frequency.value = 1200;
+                    const gain = ctx.createGain();
+                    gain.gain.setValueAtTime(0.15 * vol, now);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, now + 0.12);
+                    noise.connect(filter).connect(gain).connect(ctx.destination);
+                    noise.start(now);
+                } catch (e) { /* аудио недоступно — молча пропускаем */ }
+            }
+
+            // Фоновая музыка (задаётся Хранителем через админку)
+            const bgMusic = document.getElementById("bg-music");
+            function applyMusicSettings() {
+                const url = (archiveData.settings && archiveData.settings.musicUrl) || "";
+                bgMusic.src = url;
+                bgMusic.volume = userSettings.volume / 100;
+                musicBtn.style.display = (url && userSettings.music) ? "block" : "none";
+            }
+
+            const musicBtn = document.getElementById("music-btn");
+            let musicOn = false;
+            musicBtn.addEventListener("click", () => {
+                if (!bgMusic.src || !userSettings.music) return;
+                musicOn = !musicOn;
+                if (musicOn) {
+                    bgMusic.play().catch(() => {});
+                    musicBtn.textContent = "🔊";
+                } else {
+                    bgMusic.pause();
+                    musicBtn.textContent = "🎵";
+                }
+            });
+
+            // Лёгкий параллакс кругового меню от движения курсора
+            const circleMenu = document.querySelector(".circle-menu");
+            if (circleMenu) {
+                document.addEventListener("mousemove", (e) => {
+                    if (userSettings.reduceMotion) return;
+                    const x = (e.clientX / window.innerWidth - 0.5) * 14;
+                    const y = (e.clientY / window.innerHeight - 0.5) * 14;
+                    circleMenu.style.transform = `translate(${x}px, ${y}px)`;
+                });
+            }
+
+            // ==========================================
+            // АДМИНКА
+            // ==========================================
+            const adminToggle = document.getElementById("admin-toggle");
+            const adminLoginModal = document.getElementById("admin-login");
+            const adminPanelModal = document.getElementById("admin-panel");
+            const adminPasswordInput = document.getElementById("admin-password");
+            const adminLoginBtn = document.getElementById("admin-login-btn");
+            const adminLoginError = document.getElementById("admin-login-error");
+            const adminEntries = document.getElementById("admin-entries");
+            const adminAddBtn = document.getElementById("admin-add");
+            const adminSaveBtn = document.getElementById("admin-save");
+            const adminStatus = document.getElementById("admin-status");
+            const adminTabs = document.querySelectorAll(".admin-tab");
+
+            let isAdminAuthed = false;
+            let currentSection = "code";
+            let draftEntries = [];
+
+            adminToggle.addEventListener("click", () => {
+                if (isAdminAuthed) {
+                    openAdminPanel();
+                } else {
+                    adminPasswordInput.value = "";
+                    adminLoginError.textContent = "";
+                    openModal("admin-login");
+                }
+            });
+
+            adminLoginBtn.addEventListener("click", attemptLogin);
+            adminPasswordInput.addEventListener("keydown", (e) => {
+                if (e.key === "Enter") attemptLogin();
+            });
+
+            function attemptLogin() {
+                if (adminPasswordInput.value === ADMIN_PASSWORD) {
+                    isAdminAuthed = true;
+                    closeModal("admin-login");
+                    openAdminPanel();
+                } else {
+                    adminLoginError.textContent = "Неверный пароль.";
+                }
+            }
+
+            function openAdminPanel() {
+                openModal("admin-panel");
+                loadDraft(currentSection);
+                if (!sb) {
+                    adminStatus.textContent = "⚠ База данных не подключена — вставь SUPABASE_URL и SUPABASE_ANON_KEY в код страницы.";
+                }
+            }
+
+            adminTabs.forEach(tab => {
+                tab.addEventListener("click", () => {
+                    adminTabs.forEach(t => t.classList.remove("active"));
+                    tab.classList.add("active");
+                    currentSection = tab.getAttribute("data-section");
+                    adminAddBtn.classList.toggle("hidden", currentSection === "settings" || currentSection === "users");
+                    adminSaveBtn.classList.toggle("hidden", currentSection === "users");
+                    loadDraft(currentSection);
+                });
+            });
+
+            function loadDraft(section) {
+                adminStatus.textContent = "";
+                if (section === "settings") {
+                    draftEntries = JSON.parse(JSON.stringify(archiveData.settings || { musicUrl: "" }));
+                    renderSettingsDraft();
+                    return;
+                }
+                if (section === "users") {
+                    renderUsersTab();
+                    return;
+                }
+                draftEntries = JSON.parse(JSON.stringify(archiveData[section] || []));
+                renderDraft();
+            }
+
+            async function renderUsersTab() {
+                adminEntries.innerHTML = `<p style="color:#666; font-size:0.85rem;">Загрузка списка странников...</p>`;
+                if (!sb) {
+                    adminEntries.innerHTML = `<p class="empty-note">База данных недоступна.</p>`;
+                    return;
+                }
+                try {
+                    const { data: users, error } = await sb
+                        .from("profiles")
+                        .select("*")
+                        .order("created_at", { ascending: false });
+                    if (error) throw error;
+
+                    if (!users || users.length === 0) {
+                        adminEntries.innerHTML = `<p class="empty-note">Пока никто не зарегистрировался.</p>`;
+                        return;
+                    }
+
+                    adminEntries.innerHTML = users.map(u => `
+                        <div class="admin-entry" data-user-id="${u.id}">
+                            <div style="display:flex; align-items:center; gap:0.7rem; margin-bottom:0.5rem;">
+                                <span style="font-size:1.4rem;">${u.avatar || "👤"}</span>
+                                <div style="flex:1;">
+                                    <div style="color:#eaeaea;">
+                                        ${escapeHtml(u.nickname || "Странник")}
+                                        ${u.is_admin ? '<span class="category-badge" style="border-color:#D4AF37; color:#D4AF37;">админ</span>' : ""}
+                                        ${u.is_blocked ? '<span class="category-badge" style="border-color:#c0392b; color:#c0392b;">заблокирован</span>' : ""}
+                                    </div>
+                                    <div style="color:#666; font-size:0.72rem;">В Архиве с ${new Date(u.created_at).toLocaleDateString("ru-RU")}</div>
+                                </div>
+                            </div>
+                            <div class="admin-entry-row" style="justify-content:flex-start; gap:0.5rem;">
+                                <button class="admin-btn user-toggle-block" data-user-id="${u.id}" data-blocked="${u.is_blocked ? "1" : "0"}" style="font-size:0.75rem; padding:6px 12px;">
+                                    ${u.is_blocked ? "Разблокировать" : "Заблокировать"}
+                                </button>
+                            </div>
+                        </div>
+                    `).join("");
+
+                    adminEntries.querySelectorAll(".user-toggle-block").forEach(btn => {
+                        btn.addEventListener("click", async () => {
+                            const userId = btn.dataset.userId;
+                            const currentlyBlocked = btn.dataset.blocked === "1";
+                            btn.textContent = "…";
+                            try {
+                                const { data, error } = await sb
+                                    .from("profiles")
+                                    .update({ is_blocked: !currentlyBlocked })
+                                    .eq("id", userId)
+                                    .select();
+                                if (error || !data || data.length === 0) {
+                                    adminStatus.textContent = "Не удалось изменить — войди в свой профиль как администратор, чтобы это работало.";
+                                    renderUsersTab();
+                                    return;
+                                }
+                                adminStatus.textContent = "Сохранено ✓";
+                                renderUsersTab();
+                            } catch (e) {
+                                console.error("Не удалось изменить статус пользователя", e);
+                                adminStatus.textContent = "Ошибка. Попробуй снова.";
+                            }
+                        });
+                    });
+                } catch (e) {
+                    console.error("Не удалось загрузить пользователей", e);
+                    adminEntries.innerHTML = `<p class="empty-note">Не удалось загрузить список.</p>`;
+                }
+            }
+
+            function renderSettingsDraft() {
+                adminEntries.innerHTML = `
+                    <div class="admin-entry">
+                        <input type="text" id="settings-music-url" value="${escapeAttr(draftEntries.musicUrl)}" placeholder="Ссылка на аудио-файл (mp3, ogg...)">
+                        <div style="display:flex; align-items:center; gap:0.6rem; margin:-0.3rem 0 0.6rem;">
+                            <input type="file" accept="audio/*" id="settings-music-file" style="font-size:0.72rem; color:#888; flex:1;">
+                            <span id="settings-music-status" style="font-size:0.72rem; color:#666;"></span>
+                        </div>
+                        <p class="empty-note" style="text-align:left; padding: 0.2rem 0 0;">
+                            Можно вставить готовую ссылку или загрузить файл напрямую — тогда ссылка подставится сама.
+                        </p>
+                    </div>
+                `;
+                document.getElementById("settings-music-url").addEventListener("input", (e) => {
+                    draftEntries.musicUrl = e.target.value;
+                });
+                document.getElementById("settings-music-file").addEventListener("change", async (e) => {
+                    const file = e.target.files[0];
+                    if (!file) return;
+                    const statusEl = document.getElementById("settings-music-status");
+                    statusEl.textContent = "Загрузка...";
+                    try {
+                        const url = await uploadFileToStorage(file, "music");
+                        draftEntries.musicUrl = url;
+                        statusEl.textContent = "Загружено ✓";
+                        document.getElementById("settings-music-url").value = url;
+                    } catch (err) {
+                        console.error("Ошибка загрузки музыки", err);
+                        statusEl.textContent = "Ошибка загрузки";
+                    }
+                });
+            }
+
+            async function uploadFileToStorage(file, folder) {
+                if (!sb) throw new Error("База данных недоступна");
+                const ext = (file.name.split(".").pop() || "bin").toLowerCase();
+                const path = `${folder}/${Date.now()}_${Math.random().toString(36).slice(2, 8)}.${ext}`;
+                const { error } = await sb.storage.from("archive-media").upload(path, file, { cacheControl: "3600", upsert: false });
+                if (error) throw error;
+                const { data } = sb.storage.from("archive-media").getPublicUrl(path);
+                return data.publicUrl;
+            }
+
+            function renderDraft() {
+                adminEntries.innerHTML = "";
+                const fields = FIELDS[currentSection];
+
+                if (draftEntries.length === 0) {
+                    const note = document.createElement("p");
+                    note.className = "empty-note";
+                    note.textContent = "Записей пока нет. Добавь первую.";
+                    adminEntries.appendChild(note);
+                }
+
+                draftEntries.forEach((entry, index) => {
+                    const div = document.createElement("div");
+                    div.className = "admin-entry";
+                    if (entry.published === false) {
+                        div.style.borderColor = "#665522";
+                        div.style.opacity = "0.75";
+                    }
+
+                    const fieldsHtml = fields.map(f => {
+                        const value = entry[f.key] || "";
+                        if (f.type === "checkbox") {
+                            const checked = value !== false ? "checked" : "";
+                            return `
+                                <label style="display:flex; align-items:center; gap:0.4rem; font-size:0.8rem; color:#aaa; margin-bottom:0.6rem; cursor:pointer;">
+                                    <input type="checkbox" data-field="${f.key}" data-index="${index}" ${checked}>
+                                    ${f.label}
+                                </label>
+                            `;
+                        }
+                        if (f.type === "textarea") {
+                            return `<textarea data-field="${f.key}" data-index="${index}" rows="3" placeholder="${f.label}">${value}</textarea>`;
+                        }
+                        let inputHtml = `<input type="text" data-field="${f.key}" data-index="${index}" value="${escapeAttr(value)}" placeholder="${f.label}">`;
+                        if (f.uploadable) {
+                            inputHtml += `
+                                <div style="display:flex; align-items:center; gap:0.6rem; margin:-0.3rem 0 0.6rem;">
+                                    <input type="file" accept="${f.accept || '*'}" data-upload-field="${f.key}" data-upload-index="${index}" style="font-size:0.72rem; color:#888; flex:1;">
+                                    <span class="upload-status" data-status-field="${f.key}" data-status-index="${index}" style="font-size:0.72rem; color:#666;"></span>
+                                </div>
+                            `;
+                        }
+                        return inputHtml;
+                    }).join("");
+
+                    let previewHtml = "";
+                    if (currentSection === "gallery" && entry.imageUrl) {
+                        previewHtml = `<img src="${escapeAttr(entry.imageUrl)}" style="max-width:100%; max-height:120px; object-fit:cover; margin-bottom:0.6rem; border-radius:2px; display:block;">`;
+                    }
+
+                    div.innerHTML = `
+                        ${previewHtml}
+                        ${entry.published === false ? '<div style="color:#c9a227; font-size:0.72rem; margin-bottom:0.5rem;">📝 Черновик — не виден посетителям</div>' : ""}
+                        ${fieldsHtml}
+                        <div class="admin-entry-row">
+                            <button class="admin-delete" data-index="${index}">Удалить</button>
+                        </div>
+                    `;
+                    adminEntries.appendChild(div);
+                });
+
+                adminEntries.querySelectorAll("input[data-field], textarea[data-field]").forEach(el => {
+                    const eventName = el.type === "checkbox" ? "change" : "input";
+                    el.addEventListener(eventName, (e) => {
+                        const idx = e.target.dataset.index;
+                        const field = e.target.dataset.field;
+                        draftEntries[idx][field] = e.target.type === "checkbox" ? e.target.checked : e.target.value;
+                        if (e.target.type === "checkbox") renderDraft();
+                    });
+                    if (currentSection === "gallery" && el.dataset.field === "imageUrl") {
+                        el.addEventListener("change", () => renderDraft());
+                    }
+                });
+
+                adminEntries.querySelectorAll("input[type=file][data-upload-field]").forEach(fileInput => {
+                    fileInput.addEventListener("change", async (e) => {
+                        const file = e.target.files[0];
+                        if (!file) return;
+                        const field = fileInput.dataset.uploadField;
+                        const idx = fileInput.dataset.uploadIndex;
+                        const statusEl = adminEntries.querySelector(`.upload-status[data-status-field="${field}"][data-status-index="${idx}"]`);
+                        statusEl.textContent = "Загрузка...";
+                        try {
+                            const folder = currentSection === "gallery" ? "gallery" : "music";
+                            const url = await uploadFileToStorage(file, folder);
+                            draftEntries[idx][field] = url;
+                            statusEl.textContent = "Загружено ✓";
+                            renderDraft();
+                        } catch (err) {
+                            console.error("Ошибка загрузки файла", err);
+                            statusEl.textContent = "Ошибка загрузки";
+                        }
+                    });
+                });
+
+                adminEntries.querySelectorAll(".admin-delete").forEach(btn => {
+                    btn.addEventListener("click", (e) => {
+                        const idx = Number(e.target.dataset.index);
+                        draftEntries.splice(idx, 1);
+                        renderDraft();
+                    });
+                });
+            }
+
+            function escapeAttr(str) {
+                return (str || "").replace(/"/g, "&quot;");
+            }
+
+            adminAddBtn.addEventListener("click", () => {
+                if (currentSection === "settings") return;
+                const fields = FIELDS[currentSection];
+                const blank = {};
+                fields.forEach(f => {
+                    if (f.type === "checkbox") blank[f.key] = true;
+                    else blank[f.key] = f.key === "title" ? "Новая запись" : "";
+                });
+                draftEntries.push(blank);
+                renderDraft();
+            });
+
+            adminSaveBtn.addEventListener("click", async () => {
+                if (currentSection === "users") return;
+                adminStatus.textContent = "Сохраняю...";
+                const ok = await saveSection(currentSection, draftEntries);
+                if (ok) {
+                    archiveData[currentSection] = JSON.parse(JSON.stringify(draftEntries));
+                    if (CONTAINER_IDS[currentSection]) {
+                        renderScrolls(currentSection);
+                    } else if (currentSection === "chronicles") {
+                        renderChronicle();
+                    } else if (currentSection === "world") {
+                        renderWorld();
+                    } else if (currentSection === "gallery") {
+                        renderGallery();
+                    } else if (currentSection === "settings") {
+                        applyMusicSettings();
+                    }
+                    adminStatus.textContent = "Сохранено ✓";
+                } else {
+                    adminStatus.textContent = "Не удалось сохранить. Попробуй ещё раз.";
+                }
+            });
+
+            // ==========================================
+            // АККАУНТЫ СТРАННИКОВ
+            // ==========================================
+            const AVATAR_OPTIONS = ["👤", "🦇", "🐉", "👑", "🔥", "❄️", "🌙", "💀", "🕊️", "⚔️"];
+            let currentUser = null;
+            let currentProfile = null;
+            let favoriteKeys = new Set(); // "section::title"
+            let favoritesList = []; // [{section, item_title}]
+            let subscribedKeys = new Set(); // "section::title"
+            let notifications = [];
+            let unreadNotificationsCount = 0;
+
+            const ACHIEVEMENTS = [
+                { key: "first_visit", icon: "🏅", title: "Первый визит", desc: "Впервые вошёл в Архив" },
+                { key: "read_codex", icon: "📖", title: "Прочитал Кодекс", desc: "Открыл Кодекс Архива" },
+                { key: "explorer", icon: "🧭", title: "Исследователь Архива", desc: "Заглянул во все разделы Архива" },
+                { key: "collector", icon: "⭐", title: "Собиратель", desc: "Добавил первую запись в избранное" },
+                { key: "voice", icon: "💬", title: "Голос Архива", desc: "Оставил первый комментарий" }
+            ];
+            let unlockedAchievements = new Set();
+            let exploredSections = new Set();
+
+            function favKey(section, title) {
+                return `${section}::${title}`;
+            }
+
+            async function refreshSession() {
+                if (!sb) return;
+                try {
+                    const { data: { session } } = await sb.auth.getSession();
+                    if (session && session.user) {
+                        currentUser = session.user;
+                        await loadProfile();
+                        await loadFavorites();
+                        await loadAchievements();
+                        await loadSubscriptions();
+                        await loadNotifications();
+                        unlockAchievement("first_visit");
+                    }
+                } catch (e) {
+                    console.error("Не удалось получить сессию", e);
+                }
+            }
+
+            async function loadProfile() {
+                if (!sb || !currentUser) return;
+                try {
+                    const { data, error } = await sb
+                        .from("profiles")
+                        .select("*")
+                        .eq("id", currentUser.id)
+                        .maybeSingle();
+                    if (!error && data) {
+                        currentProfile = data;
+                        // Обновляем дату визита в базе на "сейчас", но в currentProfile
+                        // оставляем старое значение — чтобы показать "прошлый визит"
+                        sb.from("profiles").update({ last_visit: new Date().toISOString() }).eq("id", currentUser.id)
+                            .then(() => {}).catch(() => {});
+                    } else {
+                        // Профиля ещё нет — создаём при первом входе
+                        const nickname = (currentUser.email || "Странник").split("@")[0];
+                        const { data: created } = await sb
+                            .from("profiles")
+                            .upsert({ id: currentUser.id, nickname, avatar: "👤", last_visit: new Date().toISOString() })
+                            .select()
+                            .maybeSingle();
+                        currentProfile = created || { nickname, avatar: "👤", created_at: new Date().toISOString(), last_visit: new Date().toISOString() };
+                    }
+                } catch (e) {
+                    console.error("Ошибка загрузки профиля", e);
+                }
+            }
+
+            async function loadFavorites() {
+                if (!sb || !currentUser) return;
+                try {
+                    const { data, error } = await sb
+                        .from("favorites")
+                        .select("section, item_title")
+                        .eq("user_id", currentUser.id);
+                    if (!error && data) {
+                        favoriteKeys = new Set(data.map(f => favKey(f.section, f.item_title)));
+                        favoritesList = data;
+                    }
+                } catch (e) {
+                    console.error("Ошибка загрузки избранного", e);
+                }
+            }
+
+            async function loadAchievements() {
+                if (!sb || !currentUser) return;
+                try {
+                    const { data, error } = await sb
+                        .from("achievements")
+                        .select("achievement_key")
+                        .eq("user_id", currentUser.id);
+                    if (!error && data) {
+                        unlockedAchievements = new Set(data.map(a => a.achievement_key));
+                    }
+                } catch (e) {
+                    console.error("Ошибка загрузки достижений", e);
+                }
+            }
+
+            // ==========================================
+            // ПОДПИСКИ И УВЕДОМЛЕНИЯ
+            // ==========================================
+            async function loadSubscriptions() {
+                if (!sb || !currentUser) return;
+                try {
+                    const { data, error } = await sb
+                        .from("subscriptions")
+                        .select("section, item_title")
+                        .eq("user_id", currentUser.id);
+                    if (!error && data) {
+                        subscribedKeys = new Set(data.map(s => favKey(s.section, s.item_title)));
+                    }
+                } catch (e) {
+                    console.error("Ошибка загрузки подписок", e);
+                }
+            }
+
+            async function toggleSubscription(section, title, btnEl) {
+                if (!sb) return;
+                if (!currentUser) {
+                    openProfileOrAuth();
+                    return;
+                }
+                const key = favKey(section, title);
+                try {
+                    if (subscribedKeys.has(key)) {
+                        await sb.from("subscriptions").delete()
+                            .eq("user_id", currentUser.id)
+                            .eq("section", section)
+                            .eq("item_title", title);
+                        subscribedKeys.delete(key);
+                    } else {
+                        await sb.from("subscriptions").insert({ user_id: currentUser.id, section, item_title: title });
+                        subscribedKeys.add(key);
+                    }
+                    if (btnEl) {
+                        const nowSubbed = subscribedKeys.has(key);
+                        btnEl.textContent = nowSubbed ? "🔔 Подписан" : "🔕 Подписаться";
+                        btnEl.style.color = nowSubbed ? "var(--accent-gold)" : "#666";
+                    }
+                } catch (e) {
+                    console.error("Не удалось изменить подписку", e);
+                }
+            }
+
+            async function notifySubscribers(section, title, message, excludeUserId) {
+                if (!sb) return;
+                try {
+                    const { data: subs } = await sb
+                        .from("subscriptions")
+                        .select("user_id")
+                        .eq("section", section)
+                        .eq("item_title", title);
+                    if (!subs || subs.length === 0) return;
+                    const rows = subs
+                        .filter(s => s.user_id !== excludeUserId)
+                        .map(s => ({ user_id: s.user_id, message, section, item_title: title }));
+                    if (rows.length > 0) {
+                        await sb.from("notifications").insert(rows);
+                    }
+                } catch (e) {
+                    console.error("Не удалось разослать уведомления", e);
+                }
+            }
+
+            async function notifyUser(userId, message, section, title) {
+                if (!sb || !currentUser || userId === currentUser.id) return;
+                try {
+                    await sb.from("notifications").insert({ user_id: userId, message, section, item_title: title });
+                } catch (e) {
+                    console.error("Не удалось отправить уведомление", e);
+                }
+            }
+
+            async function loadNotifications() {
+                if (!sb || !currentUser) return;
+                try {
+                    const { data, error } = await sb
+                        .from("notifications")
+                        .select("*")
+                        .eq("user_id", currentUser.id)
+                        .order("created_at", { ascending: false })
+                        .limit(30);
+                    if (!error && data) {
+                        notifications = data;
+                        unreadNotificationsCount = data.filter(n => !n.is_read).length;
+                        updateNotificationsBadge();
+                    }
+                } catch (e) {
+                    console.error("Ошибка загрузки уведомлений", e);
+                }
+            }
+
+            function updateNotificationsBadge() {
+                const badge = document.getElementById("notifications-badge");
+                if (unreadNotificationsCount > 0) {
+                    badge.textContent = unreadNotificationsCount > 9 ? "9+" : unreadNotificationsCount;
+                    badge.classList.remove("hidden");
+                } else {
+                    badge.classList.add("hidden");
+                }
+            }
+
+            function renderNotificationsList() {
+                const list = document.getElementById("notifications-list");
+                if (notifications.length === 0) {
+                    list.innerHTML = `<p class="empty-note">Пока тихо — уведомлений нет.</p>`;
+                    return;
+                }
+                list.innerHTML = notifications.map(n => `
+                    <div class="notification-item" data-id="${n.id}" data-section="${n.section || ""}" data-title="${escapeAttrGlobal(n.item_title || "")}"
+                         style="border:1px solid ${n.is_read ? "#1a1a1a" : "rgba(212,175,55,0.4)"}; background:${n.is_read ? "#0a0a0a" : "#0d0d0d"}; padding:0.7rem 0.9rem; margin-bottom:0.5rem; border-radius:3px; cursor:pointer;">
+                        <div style="color:${n.is_read ? "#999" : "#eaeaea"}; font-size:0.85rem;">${escapeHtml(n.message)}</div>
+                        <div style="color:#555; font-size:0.7rem; margin-top:0.3rem;">${new Date(n.created_at).toLocaleString("ru-RU")}</div>
+                    </div>
+                `).join("");
+
+                list.querySelectorAll(".notification-item").forEach(el => {
+                    el.addEventListener("click", async () => {
+                        const id = el.dataset.id;
+                        const section = el.dataset.section;
+                        try {
+                            await sb.from("notifications").update({ is_read: true }).eq("id", id);
+                        } catch (e) { /* не критично */ }
+                        if (section) {
+                            closeModal("modal-notifications");
+                            openModal(SECTION_MODAL_IDS[section] || `modal-${section}`);
+                        }
+                        await loadNotifications();
+                    });
+                });
+            }
+
+            document.getElementById("notifications-toggle").addEventListener("click", async () => {
+                openModal("modal-notifications");
+                await loadNotifications();
+                renderNotificationsList();
+            });
+
+            async function unlockAchievement(key) {
+                if (!sb || !currentUser) return;
+                if (unlockedAchievements.has(key)) return;
+                unlockedAchievements.add(key); // оптимистично, чтобы не спамить повторно при сетевых задержках
+                try {
+                    const { error } = await sb.from("achievements").insert({ user_id: currentUser.id, achievement_key: key });
+                    if (error) {
+                        // Скорее всего уже было разблокировано раньше (уникальный ключ) — молча игнорируем
+                        return;
+                    }
+                    const achievement = ACHIEVEMENTS.find(a => a.key === key);
+                    if (achievement) showAchievementToast(achievement);
+                } catch (e) {
+                    console.error("Не удалось сохранить достижение", e);
+                }
+            }
+
+            function showAchievementToast(achievement) {
+                const toast = document.createElement("div");
+                toast.style.cssText = "position:fixed; bottom:30px; left:50%; transform:translateX(-50%) translateY(20px); background:#0a0a0a; border:1px solid #D4AF37; box-shadow:0 0 25px rgba(212,175,55,0.3); padding:0.8rem 1.2rem; border-radius:6px; z-index:300; display:flex; align-items:center; gap:0.7rem; opacity:0; transition:all 0.4s ease; max-width:88vw;";
+                toast.innerHTML = `
+                    <span style="font-size:1.6rem;">${achievement.icon}</span>
+                    <div style="text-align:left;">
+                        <div style="color:#D4AF37; font-size:0.85rem; letter-spacing:0.05em;">Достижение открыто</div>
+                        <div style="color:#eaeaea; font-size:0.8rem;">${escapeHtml(achievement.title)}</div>
+                    </div>
+                `;
+                document.body.appendChild(toast);
+                requestAnimationFrame(() => {
+                    toast.style.opacity = "1";
+                    toast.style.transform = "translateX(-50%) translateY(0)";
+                });
+                setTimeout(() => {
+                    toast.style.opacity = "0";
+                    toast.style.transform = "translateX(-50%) translateY(20px)";
+                    setTimeout(() => toast.remove(), 400);
+                }, 3500);
+            }
+
+            async function toggleFavorite(section, title) {
+                if (!sb) return;
+                if (!currentUser) {
+                    openProfileOrAuth();
+                    return;
+                }
+                const key = favKey(section, title);
+                try {
+                    if (favoriteKeys.has(key)) {
+                        await sb.from("favorites").delete()
+                            .eq("user_id", currentUser.id)
+                            .eq("section", section)
+                            .eq("item_title", title);
+                        favoriteKeys.delete(key);
+                        favoritesList = favoritesList.filter(f => favKey(f.section, f.item_title) !== key);
+                    } else {
+                        await sb.from("favorites").insert({ user_id: currentUser.id, section, item_title: title });
+                        favoriteKeys.add(key);
+                        favoritesList.push({ section, item_title: title });
+                        unlockAchievement("collector");
+                    }
+                    renderAllScrolls();
+                    if (!document.getElementById("modal-profile").classList.contains("hidden")) {
+                        renderProfileFavoritesList();
+                        document.getElementById("profile-favorites-count").textContent = favoriteKeys.size;
+                    }
+                } catch (e) {
+                    console.error("Не удалось изменить избранное", e);
+                }
+            }
+
+            // ==========================================
+            // КОММЕНТАРИИ
+            // ==========================================
+            function attachComments(bodyEl, section, title) {
+                const wrap = document.createElement("div");
+                wrap.className = "comments-wrap";
+                const key = favKey(section, title);
+                const isSubbed = subscribedKeys.has(key);
+                wrap.innerHTML = `
+                    <div style="display:flex; align-items:center; gap:1rem; margin-top:0.8rem;">
+                        <div class="comments-toggle" style="color:#00BFFF; cursor:pointer; font-size:0.78rem;">💬 Комментарии</div>
+                        <div class="sub-toggle" style="color:${isSubbed ? "var(--accent-gold)" : "#666"}; cursor:pointer; font-size:0.78rem;">${isSubbed ? "🔔 Подписан" : "🔕 Подписаться"}</div>
+                    </div>
+                    <div class="comments-body hidden" style="margin-top:0.6rem;"></div>
+                `;
+                bodyEl.appendChild(wrap);
+                const toggle = wrap.querySelector(".comments-toggle");
+                const subToggle = wrap.querySelector(".sub-toggle");
+                const commentsBody = wrap.querySelector(".comments-body");
+                let loaded = false;
+                toggle.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    if (commentsBody.classList.contains("hidden")) {
+                        commentsBody.classList.remove("hidden");
+                        if (!loaded) {
+                            loaded = true;
+                            await loadAndRenderComments(commentsBody, section, title);
+                        }
+                    } else {
+                        commentsBody.classList.add("hidden");
+                    }
+                });
+                subToggle.addEventListener("click", async (e) => {
+                    e.stopPropagation();
+                    await toggleSubscription(section, title, subToggle);
+                });
+            }
+
+            async function loadAndRenderComments(container, section, title) {
+                container.innerHTML = `<span style="color:#666; font-size:0.8rem;">Загрузка...</span>`;
+                if (!sb) {
+                    container.innerHTML = `<span style="color:#666; font-size:0.8rem;">База данных недоступна.</span>`;
+                    return;
+                }
+                try {
+                    const { data: comments, error } = await sb
+                        .from("comments")
+                        .select("*")
+                        .eq("section", section)
+                        .eq("item_title", title)
+                        .order("created_at", { ascending: true });
+                    if (error) throw error;
+
+                    const ids = (comments || []).map(c => c.id);
+                    const likesByComment = {};
+                    const myLikes = new Set();
+                    if (ids.length > 0) {
+                        const { data: likes } = await sb
+                            .from("comment_likes")
+                            .select("comment_id, user_id")
+                            .in("comment_id", ids);
+                        (likes || []).forEach(l => {
+                            likesByComment[l.comment_id] = (likesByComment[l.comment_id] || 0) + 1;
+                            if (currentUser && l.user_id === currentUser.id) myLikes.add(l.comment_id);
+                        });
+                    }
+                    renderCommentsList(container, section, title, comments || [], likesByComment, myLikes);
+                } catch (e) {
+                    console.error("Ошибка загрузки комментариев", e);
+                    container.innerHTML = `<span style="color:#666; font-size:0.8rem;">Не удалось загрузить комментарии.</span>`;
+                }
+            }
+
+            function renderCommentsList(container, section, title, comments, likesByComment, myLikes) {
+                const listHtml = comments.length === 0
+                    ? `<p style="color:#555; font-style:italic; font-size:0.8rem;">Комментариев пока нет — будь первым.</p>`
+                    : comments.map(c => {
+                        const likeCount = likesByComment[c.id] || 0;
+                        const liked = myLikes.has(c.id);
+                        const canDelete = currentUser && (currentUser.id === c.user_id || (currentProfile && currentProfile.is_admin));
+                        return `
+                            <div class="comment-item" data-comment-id="${c.id}" data-user-id="${c.user_id}" style="border:1px solid #1a1a1a; background:#080808; padding:0.6rem 0.8rem; margin-bottom:0.5rem; border-radius:3px; font-size:0.8rem;">
+                                <div style="color:#D4AF37; margin-bottom:0.2rem;">${c.avatar || "👤"} ${escapeHtml(c.nickname || "Странник")}</div>
+                                <div style="color:#ccc;">${escapeHtml(c.content)}</div>
+                                <div style="margin-top:0.4rem; display:flex; gap:0.8rem; align-items:center;">
+                                    <span class="comment-like" style="cursor:pointer; color:${liked ? "#D4AF37" : "#666"};">${liked ? "♥" : "♡"} ${likeCount || ""}</span>
+                                    ${canDelete ? `<span class="comment-delete" style="cursor:pointer; color:#663333; font-size:0.72rem;">удалить</span>` : ""}
+                                </div>
+                            </div>
+                        `;
+                    }).join("");
+
+                const formHtml = currentUser
+                    ? `
+                        <div style="display:flex; gap:0.5rem; margin-top:0.6rem;">
+                            <input type="text" class="comment-input" placeholder="Написать комментарий..." style="flex:1; background:#0d0d0d; border:1px solid #333; color:#EAEAEA; padding:6px 10px; font-family:inherit; font-size:0.8rem; border-radius:2px;">
+                            <button class="comment-submit admin-btn" style="padding:6px 14px; font-size:0.78rem;">Отправить</button>
+                        </div>
+                    `
+                    : `<p style="color:#666; font-size:0.78rem; margin-top:0.6rem;">Войди в профиль, чтобы оставить комментарий.</p>`;
+
+                container.innerHTML = listHtml + formHtml;
+
+                container.querySelectorAll(".comment-like").forEach(el => {
+                    el.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        const item = el.closest(".comment-item");
+                        const commentId = item.dataset.commentId;
+                        const ownerId = item.dataset.userId;
+                        await toggleCommentLike(commentId, container, section, title, ownerId);
+                    });
+                });
+
+                container.querySelectorAll(".comment-delete").forEach(el => {
+                    el.addEventListener("click", async (e) => {
+                        e.stopPropagation();
+                        const commentId = el.closest(".comment-item").dataset.commentId;
+                        await deleteComment(commentId, container, section, title);
+                    });
+                });
+
+                const submitBtn = container.querySelector(".comment-submit");
+                if (submitBtn) {
+                    submitBtn.addEventListener("click", (e) => {
+                        e.stopPropagation();
+                        postComment(container, section, title);
+                    });
+                    const input = container.querySelector(".comment-input");
+                    input.addEventListener("click", (e) => e.stopPropagation());
+                    input.addEventListener("keydown", (e) => {
+                        if (e.key === "Enter") postComment(container, section, title);
+                    });
+                }
+            }
+
+            async function postComment(container, section, title) {
+                if (!sb || !currentUser) return;
+                const input = container.querySelector(".comment-input");
+                const text = input.value.trim();
+                if (!text) return;
+                try {
+                    await sb.from("comments").insert({
+                        user_id: currentUser.id,
+                        nickname: (currentProfile && currentProfile.nickname) || "Странник",
+                        avatar: (currentProfile && currentProfile.avatar) || "👤",
+                        section,
+                        item_title: title,
+                        content: text
+                    });
+                    await loadAndRenderComments(container, section, title);
+                    unlockAchievement("voice");
+                    const nickname = (currentProfile && currentProfile.nickname) || "Странник";
+                    notifySubscribers(section, title, `💬 ${nickname} оставил новый комментарий к «${title}»`, currentUser.id);
+                } catch (e) {
+                    console.error("Не удалось отправить комментарий", e);
+                }
+            }
+
+            async function toggleCommentLike(commentId, container, section, title, ownerId) {
+                if (!sb) return;
+                if (!currentUser) {
+                    openProfileOrAuth();
+                    return;
+                }
+                try {
+                    const { data: existing } = await sb
+                        .from("comment_likes")
+                        .select("id")
+                        .eq("comment_id", commentId)
+                        .eq("user_id", currentUser.id)
+                        .maybeSingle();
+                    if (existing) {
+                        await sb.from("comment_likes").delete().eq("id", existing.id);
+                    } else {
+                        await sb.from("comment_likes").insert({ comment_id: commentId, user_id: currentUser.id });
+                        if (ownerId) {
+                            const nickname = (currentProfile && currentProfile.nickname) || "Странник";
+                            notifyUser(ownerId, `❤️ ${nickname} оценил твой комментарий к «${title}»`, section, title);
+                        }
+                    }
+                    await loadAndRenderComments(container, section, title);
+                } catch (e) {
+                    console.error("Не удалось изменить лайк", e);
+                }
+            }
+
+            async function deleteComment(commentId, container, section, title) {
+                if (!sb || !currentUser) return;
+                try {
+                    await sb.from("comments").delete().eq("id", commentId);
+                    await loadAndRenderComments(container, section, title);
+                } catch (e) {
+                    console.error("Не удалось удалить комментарий", e);
+                }
+            }
+
+            function openProfileOrAuth() {
+                if (!sb) {
+                    alert("База данных не подключена — аккаунты пока недоступны.");
+                    return;
+                }
+                if (currentUser) {
+                    openProfileModal();
+                } else {
+                    authMode = "login";
+                    updateAuthTabsUI();
+                    document.getElementById("auth-error").textContent = "";
+                    openModal("modal-auth");
+                }
+            }
+
+            function openProfileModal() {
+                document.getElementById("profile-avatar-display").textContent = (currentProfile && currentProfile.avatar) || "👤";
+                document.getElementById("profile-nickname").value = (currentProfile && currentProfile.nickname) || "";
+                document.getElementById("profile-bio").value = (currentProfile && currentProfile.bio) || "";
+                const created = currentProfile && currentProfile.created_at ? new Date(currentProfile.created_at) : new Date();
+                const lastVisit = currentProfile && currentProfile.last_visit ? new Date(currentProfile.last_visit) : new Date();
+                document.getElementById("profile-created").textContent = created.toLocaleDateString("ru-RU");
+                document.getElementById("profile-last-visit").textContent = lastVisit.toLocaleString("ru-RU");
+                document.getElementById("profile-favorites-count").textContent = favoriteKeys.size;
+                renderAvatarPicker();
+                renderProfileFavoritesList();
+                renderProfileAchievements();
+                loadProfileStats();
+                openModal("modal-profile");
+            }
+
+            async function loadProfileStats() {
+                const commentsEl = document.getElementById("profile-comments-count");
+                const likesEl = document.getElementById("profile-likes-received");
+                if (!sb || !currentUser) {
+                    commentsEl.textContent = "0";
+                    likesEl.textContent = "0";
+                    return;
+                }
+                try {
+                    const { data: myComments } = await sb
+                        .from("comments")
+                        .select("id")
+                        .eq("user_id", currentUser.id);
+                    commentsEl.textContent = myComments ? myComments.length : "0";
+
+                    if (myComments && myComments.length > 0) {
+                        const ids = myComments.map(c => c.id);
+                        const { data: likes } = await sb
+                            .from("comment_likes")
+                            .select("id")
+                            .in("comment_id", ids);
+                        likesEl.textContent = likes ? likes.length : "0";
+                    } else {
+                        likesEl.textContent = "0";
+                    }
+                } catch (e) {
+                    console.error("Не удалось загрузить статистику", e);
+                    commentsEl.textContent = "—";
+                    likesEl.textContent = "—";
+                }
+            }
+
+            function renderProfileAchievements() {
+                const container = document.getElementById("profile-achievements");
+                container.innerHTML = ACHIEVEMENTS.map(a => {
+                    const unlocked = unlockedAchievements.has(a.key);
+                    return `
+                        <div title="${escapeAttrGlobal(a.desc)}" style="text-align:center; width:64px; opacity:${unlocked ? "1" : "0.3"};">
+                            <div style="font-size:1.6rem;">${a.icon}</div>
+                            <div style="font-size:0.62rem; color:${unlocked ? "#D4AF37" : "#666"}; line-height:1.2; margin-top:0.2rem;">${escapeHtml(a.title)}</div>
+                        </div>
+                    `;
+                }).join("");
+            }
+
+            const SECTION_LABELS = {
+                code: "📖 Кодекс",
+                commandments: "✦ Заповеди",
+                chronicles: "📜 Хроника",
+                messages: "💬 Послания",
+                world: "🌌 Мир"
+            };
+
+            const SECTION_MODAL_IDS = {
+                code: "modal-code",
+                commandments: "modal-precepts",
+                chronicles: "modal-chronicle",
+                messages: "modal-messages",
+                world: "modal-world"
+            };
+
+            function renderProfileFavoritesList() {
+                const container = document.getElementById("profile-favorites-list");
+                container.innerHTML = "";
+                if (favoritesList.length === 0) {
+                    const note = document.createElement("p");
+                    note.className = "empty-note";
+                    note.textContent = "Пока ничего не добавлено в избранное — жми ☆ рядом с записями.";
+                    container.appendChild(note);
+                    return;
+                }
+                favoritesList.forEach(fav => {
+                    const row = document.createElement("div");
+                    row.style.cssText = "display:flex; justify-content:space-between; align-items:center; border:1px solid #222; background:#0d0d0d; padding:8px 10px; margin-bottom:6px; border-radius:3px; font-size:0.82rem; cursor:pointer;";
+                    row.innerHTML = `
+                        <span style="color:#ccc;">
+                            <span style="color:#D4AF37;">★</span>
+                            ${escapeHtml(fav.item_title)}
+                            <span style="color:#666; font-size:0.75rem;"> — ${SECTION_LABELS[fav.section] || fav.section}</span>
+                        </span>
+                    `;
+                    row.addEventListener("click", () => {
+                        closeModal("modal-profile");
+                        openModal(SECTION_MODAL_IDS[fav.section]);
+                    });
+                    container.appendChild(row);
+                });
+            }
+
+            function renderAvatarPicker() {
+                const picker = document.getElementById("avatar-picker");
+                picker.innerHTML = "";
+                AVATAR_OPTIONS.forEach(av => {
+                    const btn = document.createElement("button");
+                    btn.textContent = av;
+                    btn.setAttribute("style", `font-size:1.4rem; background:${(currentProfile && currentProfile.avatar) === av ? "rgba(212,175,55,0.2)" : "transparent"}; border:1px solid #333; border-radius:6px; padding:4px 8px; cursor:pointer;`);
+                    btn.addEventListener("click", () => {
+                        currentProfile = currentProfile || {};
+                        currentProfile.avatar = av;
+                        document.getElementById("profile-avatar-display").textContent = av;
+                        renderAvatarPicker();
+                    });
+                    picker.appendChild(btn);
+                });
+            }
+
+            // --- Вкладки входа / регистрации ---
+            let authMode = "login";
+            document.querySelectorAll("[data-auth-tab]").forEach(tab => {
+                tab.addEventListener("click", () => {
+                    authMode = tab.getAttribute("data-auth-tab");
+                    updateAuthTabsUI();
+                });
+            });
+
+            function updateAuthTabsUI() {
+                document.querySelectorAll("[data-auth-tab]").forEach(tab => {
+                    tab.classList.toggle("active", tab.getAttribute("data-auth-tab") === authMode);
+                });
+                const submitBtn = document.getElementById("auth-submit");
+                const subtitle = document.getElementById("auth-subtitle");
+                if (authMode === "login") {
+                    submitBtn.textContent = "Войти";
+                    subtitle.textContent = "Войди, чтобы Архив запомнил тебя";
+                } else {
+                    submitBtn.textContent = "Создать аккаунт";
+                    subtitle.textContent = "Стань частью Архива";
+                }
+                document.getElementById("auth-error").textContent = "";
+            }
+
+            document.getElementById("auth-submit").addEventListener("click", async () => {
+                if (!sb) return;
+                const email = document.getElementById("auth-email").value.trim();
+                const password = document.getElementById("auth-password").value;
+                const errorEl = document.getElementById("auth-error");
+                errorEl.textContent = "";
+
+                if (!email || !password) {
+                    errorEl.textContent = "Заполни email и пароль.";
+                    return;
+                }
+
+                try {
+                    if (authMode === "login") {
+                        const { data, error } = await sb.auth.signInWithPassword({ email, password });
+                        if (error) throw error;
+                        currentUser = data.user;
+                        await loadProfile();
+                        await loadFavorites();
+                        await loadAchievements();
+                        await loadSubscriptions();
+                        await loadNotifications();
+                        await unlockAchievement("first_visit");
+                        closeModal("modal-auth");
+                        renderAllScrolls();
+                        openProfileModal();
+                    } else {
+                        const { data, error } = await sb.auth.signUp({ email, password });
+                        if (error) throw error;
+                        if (data.session) {
+                            currentUser = data.user;
+                            await loadProfile();
+                            await loadFavorites();
+                            await loadAchievements();
+                        await loadSubscriptions();
+                        await loadNotifications();
+                            await unlockAchievement("first_visit");
+                            closeModal("modal-auth");
+                            renderAllScrolls();
+                            document.getElementById("auth-note").textContent = "";
+                            openProfileModal();
+                        } else {
+                            document.getElementById("auth-note").textContent = "Проверь почту — нужно подтвердить email, потом сможешь войти.";
+                        }
+                    }
+                } catch (e) {
+                    errorEl.textContent = e.message || "Что-то пошло не так.";
+                }
+            });
+
+            document.getElementById("profile-save").addEventListener("click", async () => {
+                if (!sb || !currentUser) return;
+                const nickname = document.getElementById("profile-nickname").value.trim() || "Странник";
+                const bio = document.getElementById("profile-bio").value.trim();
+                const avatar = (currentProfile && currentProfile.avatar) || "👤";
+                try {
+                    await sb.from("profiles").upsert({ id: currentUser.id, nickname, avatar, bio });
+                    currentProfile = { ...currentProfile, nickname, avatar, bio };
+                    closeModal("modal-profile");
+                } catch (e) {
+                    console.error("Не удалось сохранить профиль", e);
+                }
+            });
+
+            document.getElementById("profile-logout").addEventListener("click", async () => {
+                if (!sb) return;
+                await sb.auth.signOut();
+                currentUser = null;
+                currentProfile = null;
+                favoriteKeys = new Set();
+                favoritesList = [];
+                unlockedAchievements = new Set();
+                subscribedKeys = new Set();
+                notifications = [];
+                unreadNotificationsCount = 0;
+                updateNotificationsBadge();
+                closeModal("modal-profile");
+                renderAllScrolls();
+            });
+
+            // ==========================================
+            // ОКНО НАСТРОЕК АТМОСФЕРЫ
+            // ==========================================
+            const SETTINGS_CHECKBOX_MAP = {
+                "set-music": "music",
+                "set-sounds": "sounds",
+                "set-rain": "rain",
+                "set-fog": "fog",
+                "set-particles": "particles",
+                "set-glow": "glow",
+                "set-blur": "blur",
+                "set-motion": "reduceMotion" // инвертируется отдельно ("Полные анимации" ⇄ reduceMotion)
+            };
+
+            function fillSettingsForm() {
+                document.getElementById("set-music").checked = userSettings.music;
+                document.getElementById("set-sounds").checked = userSettings.sounds;
+                document.getElementById("set-rain").checked = userSettings.rain;
+                document.getElementById("set-fog").checked = userSettings.fog;
+                document.getElementById("set-particles").checked = userSettings.particles;
+                document.getElementById("set-glow").checked = userSettings.glow;
+                document.getElementById("set-blur").checked = userSettings.blur;
+                document.getElementById("set-motion").checked = !userSettings.reduceMotion; // чекбокс "Полные анимации"
+                document.getElementById("set-volume").value = userSettings.volume;
+                document.getElementById("set-theme").value = userSettings.themeOverride;
+            }
+
+            document.querySelectorAll('.menu-item[data-target="usersettings"]').forEach(item => {
+                item.addEventListener("click", () => fillSettingsForm());
+            });
+
+            ["set-music", "set-sounds", "set-rain", "set-fog", "set-particles", "set-glow", "set-blur"].forEach(id => {
+                document.getElementById(id).addEventListener("change", (e) => {
+                    userSettings[SETTINGS_CHECKBOX_MAP[id]] = e.target.checked;
+                    saveUserSettings();
+                    applyUserSettings();
+                });
+            });
+
+            document.getElementById("set-motion").addEventListener("change", (e) => {
+                userSettings.reduceMotion = !e.target.checked; // галочка означает "полные анимации включены"
+                saveUserSettings();
+                applyUserSettings();
+            });
+
+            document.getElementById("set-volume").addEventListener("input", (e) => {
+                userSettings.volume = Number(e.target.value);
+                saveUserSettings();
+                applyUserSettings();
+            });
+
+            document.getElementById("set-theme").addEventListener("change", (e) => {
+                userSettings.themeOverride = e.target.value;
+                saveUserSettings();
+                applySeasonalTheme();
+                updateSeasonBadge();
+            });
+
+            document.getElementById("settings-reset").addEventListener("click", () => {
+                userSettings = { ...SETTINGS_DEFAULTS };
+                saveUserSettings();
+                applyUserSettings();
+                applySeasonalTheme();
+                updateSeasonBadge();
+                fillSettingsForm();
+            });
+
+            // ==========================================
+            // ЧАСТИЦЫ И ПЕРЬЯ
+            // ==========================================
+            const canvas = document.getElementById("particles-canvas");
+            const ctx = canvas.getContext("2d");
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener("resize", resizeCanvas);
+
+            const particles = [];
+            const particleCount = 35;
+
+            const SEASON_PALETTES = {
+                winter: { colors: ["255,255,255", "210,235,255", "150,200,240"], shape: "snow" },
+                spring: { colors: ["232,160,191", "150,220,160", "255,255,255"], shape: "petal" },
+                summer: { colors: [], shape: "firefly" }, // цвет светлячков берётся из accentGoldRGB
+                autumn: { colors: ["220,120,50", "170,80,30", "200,160,60"], shape: "leaf" },
+                birthday: { colors: ["255,215,0", "255,111,216", "180,122,255", "255,255,255"], shape: "confetti" }
+            };
+
+            class Feather {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = -20;
+                    this.angle = Math.random() * Math.PI * 2;
+                    this.opacity = Math.random() * 0.5 + 0.3;
+
+                    const palette = SEASON_PALETTES[currentSeasonKey] || SEASON_PALETTES.summer;
+                    this.shape = palette.shape;
+
+                    if (this.shape === "firefly") {
+                        this.color = `rgba(${accentGoldRGB}, `;
+                    } else {
+                        const colors = palette.colors;
+                        this.color = "rgba(" + colors[Math.floor(Math.random() * colors.length)] + ", ";
+                    }
+
+                    switch (this.shape) {
+                        case "snow":
+                            this.size = Math.random() * 2.5 + 1.5;
+                            this.speedY = Math.random() * 0.5 + 0.4;
+                            this.swaySpeed = Math.random() * 0.015 + 0.004;
+                            break;
+                        case "petal":
+                            this.size = Math.random() * 3 + 2.5;
+                            this.speedY = Math.random() * 0.6 + 0.3;
+                            this.swaySpeed = Math.random() * 0.03 + 0.01;
+                            break;
+                        case "firefly":
+                            this.size = Math.random() * 2.5 + 1.5;
+                            this.speedY = Math.random() * 0.25 + 0.05;
+                            this.swaySpeed = Math.random() * 0.04 + 0.015;
+                            this.glowPhase = Math.random() * Math.PI * 2;
+                            break;
+                        case "leaf":
+                            this.size = Math.random() * 4.5 + 3;
+                            this.speedY = Math.random() * 0.7 + 0.35;
+                            this.swaySpeed = Math.random() * 0.035 + 0.012;
+                            break;
+                        case "confetti":
+                            this.size = Math.random() * 3.5 + 2;
+                            this.speedY = Math.random() * 0.9 + 0.4;
+                            this.swaySpeed = Math.random() * 0.05 + 0.02;
+                            this.rotation = Math.random() * Math.PI * 2;
+                            this.rotationSpeed = (Math.random() - 0.5) * 0.1;
+                            break;
+                        default:
+                            this.size = Math.random() * 4 + 2;
+                            this.speedY = Math.random() * 0.8 + 0.3;
+                            this.swaySpeed = Math.random() * 0.02 + 0.005;
+                    }
+                }
+                update() {
+                    this.angle += this.swaySpeed;
+                    const swayAmount = this.shape === "snow" ? 0.5 : (this.shape === "firefly" ? 1.2 : 0.8);
+                    this.x += Math.sin(this.angle) * swayAmount;
+                    this.y += this.speedY;
+                    if (this.shape === "confetti") this.rotation += this.rotationSpeed;
+                    if (this.shape === "firefly") this.glowPhase += 0.05;
+                    if (this.y > canvas.height + 20) this.reset();
+                }
+                draw() {
+                    ctx.save();
+                    if (this.shape === "snow") {
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                        ctx.fillStyle = this.color + this.opacity + ")";
+                        ctx.fill();
+                    } else if (this.shape === "firefly") {
+                        const pulse = (Math.sin(this.glowPhase) + 1) / 2;
+                        ctx.beginPath();
+                        ctx.arc(this.x, this.y, this.size + pulse * 1.5, 0, Math.PI * 2);
+                        ctx.fillStyle = this.color + (this.opacity * (0.4 + pulse * 0.6)) + ")";
+                        ctx.shadowColor = this.color + "1)";
+                        ctx.shadowBlur = 8 + pulse * 6;
+                        ctx.fill();
+                    } else if (this.shape === "confetti") {
+                        ctx.translate(this.x, this.y);
+                        ctx.rotate(this.rotation);
+                        ctx.fillStyle = this.color + this.opacity + ")";
+                        ctx.fillRect(-this.size / 2, -this.size / 2, this.size, this.size);
+                    } else {
+                        // petal / leaf / стандартное перо
+                        ctx.beginPath();
+                        ctx.ellipse(this.x, this.y, this.size, this.size * 2.2, Math.sin(this.angle), 0, Math.PI * 2);
+                        ctx.fillStyle = this.color + this.opacity + ")";
+                        ctx.fill();
+                    }
+                    ctx.restore();
+                }
+            }
+
+            class RainDrop {
+                constructor() { this.reset(); }
+                reset() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * -canvas.height;
+                    this.length = Math.random() * 12 + 6;
+                    this.speed = Math.random() * 3 + 4;
+                    this.opacity = Math.random() * 0.12 + 0.04;
+                }
+                update() {
+                    this.y += this.speed;
+                    this.x -= this.speed * 0.15;
+                    if (this.y > canvas.height) this.reset();
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.moveTo(this.x, this.y);
+                    ctx.lineTo(this.x - this.length * 0.15, this.y + this.length);
+                    ctx.strokeStyle = `rgba(180, 200, 220, ${this.opacity})`;
+                    ctx.lineWidth = 1;
+                    ctx.stroke();
+                }
+            }
+
+            for (let i = 0; i < particleCount; i++) {
+                const p = new Feather();
+                p.y = Math.random() * canvas.height;
+                particles.push(p);
+            }
+
+            const rainDrops = [];
+            const rainCount = 40;
+            for (let i = 0; i < rainCount; i++) {
+                const r = new RainDrop();
+                r.y = Math.random() * canvas.height;
+                rainDrops.push(r);
+            }
+
+            function animateParticles() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                if (userSettings.rain) rainDrops.forEach(r => { r.update(); r.draw(); });
+                if (userSettings.particles) particles.forEach(p => { p.update(); p.draw(); });
+                requestAnimationFrame(animateParticles);
+            }
+            animateParticles();
+
+            // Применяем сохранённые настройки сразу после инициализации всех элементов
+            applyUserSettings();
+        });
+    </script>
+</body>
+</html>
