@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вселенная Икари & Даня</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400;1,600&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f1015;
+            --card-bg: #161822;
+            --text-color: #e2e4ed;
+            --text-muted: #8b90a7;
+            --accent-red: #ff3b5c;
+            --accent-crimson: #d62839;
+            --accent-glow: rgba(255, 59, 92, 0.25);
+            --border-color: rgba(255, 255, 255, 0.07);
+            --dialogue-color: #f1f3f9;
+            --font-size-base: 20px;
+
+            /* Цвета персонажей для тегов */
+            --danya-color: #38bdf8;
+            --ikari-color: #ff3b5c;
+            --author-color: #8b90a7;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+            font-size: var(--font-size-base);
+            line-height: 1.8;
+            padding: 40px 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(255, 59, 92, 0.06) 0%, transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(214, 40, 57, 0.05) 0%, transparent 45%);
+            background-attachment: fixed;
+            position: relative;
+        }
+
+        /* Панель настроек */
+        .settings-wrapper {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+        }
+
+        .settings-toggle {
+            background: var(--card-bg);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5), 0 0 15px var(--accent-glow);
+            backdrop-filter: blur(10px);
+        }
+
+        .settings-toggle:hover {
+            transform: rotate(45deg);
+            border-color: var(--accent-red);
+        }
+
+        .settings-menu {
+            position: absolute;
+            top: 60px;
+            right: 0;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            padding: 20px;
+            width: 300px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 25px var(--accent-glow);
+            display: none;
+            flex-direction: column;
+            gap: 16px;
+            backdrop-filter: blur(15px);
+            max-height: 85vh;
+            overflow-y: auto;
+        }
+
+        .settings-menu.open {
+            display: flex;
+            animation: menuSlide 0.25s ease-out forwards;
+        }
+
+        @keyframes menuSlide {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .settings-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .settings-label {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-muted);
+        }
+
+        .color-options {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 8px;
+        }
+
+        .color-opt {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            border: 2px solid transparent;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        }
+
+        .color-opt:hover, .color-opt.active {
+            border-color: var(--accent-red);
+            transform: scale(1.15);
+        }
+
+        .font-size-controls {
+            display: flex;
+            gap: 10px;
+        }
+
+        .font-btn {
+            flex: 1;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 6px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        .font-btn:hover {
+            background: var(--accent-red);
+            color: #fff;
+            border-color: var(--accent-red);
+        }
+
+        /* Контейнер */
+        .container {
+            max-width: 820px;
+            width: 100%;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 60px 50px;
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5), 0 0 30px var(--accent-glow);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, var(--accent-red), transparent);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 50px;
+            padding-bottom: 30px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .tag {
+            font-family: 'Inter', sans-serif;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            color: var(--accent-red);
+            background: rgba(255, 59, 92, 0.1);
+            padding: 6px 16px;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 16px;
+            border: 1px solid rgba(255, 59, 92, 0.2);
+        }
+
+        h1 {
+            font-size: 42px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            color: #ffffff;
+            margin-bottom: 12px;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .subtitle {
+            font-family: 'Inter', sans-serif;
+            font-size: 15px;
+            color: var(--text-muted);
+            font-weight: 300;
+        }
+
+        /* Главы */
+        .chapter {
+            display: none;
+            animation: pageTurn 0.4s ease-out forwards;
+        }
+
+        .chapter.active {
+            display: flex;
+            flex-direction: column;
+            gap: 22px;
+        }
+
+        @keyframes pageTurn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Проза и Диалоги */
+        p.prose {
+            text-indent: 2em;
+            text-align: justify;
+            color: var(--text-color);
+            font-size: var(--font-size-base);
+        }
+
+        p.prose::first-letter {
+            font-size: 1.1em;
+        }
+
+        p.dialogue {
+            padding-left: 14px;
+            border-left: 2px solid var(--accent-crimson);
+            color: var(--dialogue-color);
+            margin-top: 4px;
+            margin-bottom: 4px;
+            font-size: calc(var(--font-size-base) + 0.5px);
+            background: linear-gradient(90deg, rgba(255, 59, 92, 0.03) 0%, transparent 100%);
+            border-radius: 0 8px 8px 0;
+            padding-top: 6px;
+            padding-bottom: 6px;
+        }
+
+        .speaker-tag {
+            font-family: 'Inter', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            padding: 2px 8px;
+            border-radius: 4px;
+            margin-right: 8px;
+            vertical-align: middle;
+            display: inline-block;
+        }
+
+        .tag-danya {
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--danya-color);
+            border: 1px solid rgba(56, 189, 248, 0.2);
+        }
+
+        .tag-ikari {
+            background: rgba(255, 59, 92, 0.1);
+            color: var(--ikari-color);
+            border: 1px solid rgba(255, 59, 92, 0.2);
+        }
+
+        .tag-zhenya {
+            background: rgba(138, 43, 226, 0.1);
+            color: #b05cff;
+            border: 1px solid rgba(138, 43, 226, 0.2);
+}
+
+        .tag-author {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--author-color);
+            border: 1px solid var(--border-color);
+        }
+
+        strong {
+            color: #ffffff;
+            font-weight: 600;
+            background: rgba(255, 255, 255, 0.05);
+            padding: 0 4px;
+            border-radius: 4px;
+        }
+
+        /* Навигация */
+        .navigation-panel {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 50px;
+            padding-top: 25px;
+            border-top: 1px solid var(--border-color);
+            font-family: 'Inter', sans-serif;
+        }
+
+        .nav-btn {
+            background: rgba(255, 255, 255, 0.04);
+            color: var(--text-color);
+            border: 1px solid var(--border-color);
+            padding: 10px 22px;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background: var(--accent-red);
+            color: #fff;
+            border-color: var(--accent-red);
+            box-shadow: 0 4px 15px rgba(255, 59, 92, 0.3);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.25;
+            cursor: not-allowed;
+        }
+
+        .page-indicator {
+            font-size: 13px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: var(--bg-color);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #2a2d3e;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--accent-crimson);
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px 10px;
+            }
+            :root {
+                --font-size-base: 18px;
+            }
+            .container {
+                padding: 30px 20px;
+                border-radius: 12px;
+            }
+            h1 {
+                font-size: 30px;
+            }
+            p.prose {
+                text-indent: 1.2em;
+            }
+            .nav-btn {
+                padding: 8px 14px;
+                font-size: 13px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+  <!-- Настройки оформления -->
+  <div class="settings-wrapper">
+    <button class="settings-toggle" onclick="toggleSettings()" title="Настройки оформления">⚙️</button>
+    <div class="settings-menu" id="settingsMenu">
+      
+      <div class="settings-group">
+        <span class="settings-label">Размер шрифта</span>
+        <div class="font-size-controls">
+          <button class="font-btn" onclick="changeFontSize(-1)">A-</button>
+          <button class="font-btn" onclick="changeFontSize(1)">A+</button>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <span class="settings-label">Тема фона</span>
+        <div class="color-options">
+          <div class="color-opt active" title="Тёмный космос" style="background: #0f1015;" onclick="setTheme('#0f1015', '#161822', 'rgba(255, 255, 255, 0.07)', this)"></div>
+          <div class="color-opt" title="OLED Чёрный" style="background: #000000;" onclick="setTheme('#000000', '#0a0a0c', 'rgba(255, 255, 255, 0.12)', this)"></div>
+          <div class="color-opt" title="Графит" style="background: #1c2128;" onclick="setTheme('#1c2128', '#22272e', 'rgba(255, 255, 255, 0.1)', this)"></div>
+          <div class="color-opt" title="Пергамент" style="background: #e8ddc8;" onclick="setTheme('#e8ddc8', '#f4ebd9', 'rgba(0,0,0,0.1)', this)"></div>
+          <div class="color-opt" title="Фиолетовая ночь" style="background: #130f26;" onclick="setTheme('#130f26', '#1a1436', 'rgba(255,255,255,0.1)', this)"></div>
+          <div class="color-opt" title="Глубокий океан" style="background: #0a192f;" onclick="setTheme('#0a192f', '#112240', 'rgba(255,255,255,0.1)', this)"></div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <span class="settings-label">Цвет текста</span>
+        <div class="color-options">
+          <div class="color-opt active" title="Светло-серый" style="background: #e2e4ed;" onclick="setTextColor('#e2e4ed', '#8b90a7', this)"></div>
+          <div class="color-opt" title="Кремовый" style="background: #fff8e7;" onclick="setTextColor('#fff8e7', '#b5a88f', this)"></div>
+          <div class="color-opt" title="Небесный" style="background: #7dd3fc;" onclick="setTextColor('#7dd3fc', '#38bdf8', this)"></div>
+          <div class="color-opt" title="Неоновый зелёный" style="background: #a7f3d0;" onclick="setTextColor('#a7f3d0', '#34d399', this)"></div>
+          <div class="color-opt" title="Нежно-розовый" style="background: #fbcfe8;" onclick="setTextColor('#fbcfe8', '#f472b6', this)"></div>
+          <div class="color-opt" title="Тёмный" style="background: #2d3748;" onclick="setTextColor('#2d3748', '#64748b', this)"></div>
+        </div>
+      </div>
+
+      <div class="settings-group">
+        <span class="settings-label">Акцентный цвет</span>
+        <div class="color-options">
+          <div class="color-opt active" title="Алый" style="background: #ff3b5c;" onclick="setAccentColor('#ff3b5c', '#d62839', 'rgba(255, 59, 92, 0.25)', this)"></div>
+          <div class="color-opt" title="Изумруд" style="background: #2ed573;" onclick="setAccentColor('#2ed573', '#26af5f', 'rgba(46, 213, 115, 0.25)', this)"></div>
+          <div class="color-opt" title="Янтарь" style="background: #ffa502;" onclick="setAccentColor('#ffa502', '#eccc68', 'rgba(255, 165, 2, 0.25)', this)"></div>
+          <div class="color-opt" title="Аметист" style="background: #a55eea;" onclick="setAccentColor('#a55eea', '#8854d0', 'rgba(165, 94, 234, 0.25)', this)"></div>
+          <div class="color-opt" title="Бирюза" style="background: #00d2d3;" onclick="setAccentColor('#00d2d3', '#01a3a4', 'rgba(0, 210, 211, 0.25)', this)"></div>
+          <div class="color-opt" title="Фуксия" style="background: #ff6b81;" onclick="setAccentColor('#ff6b81', '#ee5253', 'rgba(255, 107, 129, 0.25)', this)"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="header">
+      <span class="tag">Фанфиковая Вселенная</span>
+      <h1 id="chapterHeaderTitle">Глава 1: Новое соседство</h1>
+      <div class="subtitle">Икари & Даня</div>
+    </div>
+
+    <!-- ГЛАВА 1 -->
+    <div class="chapter active" id="chapter-1">
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Вечер в привычной компании обещал пройти по стандартному сценарию: громкая музыка из колонок, приглушённый свет, привычный шутливый трёп и неспешные обсуждения последней недели. Белый мускулистый заяц Даня, как всегда, находился в центре внимания. Потягивая напиток и развалясь на мягком диване, он с привычной уверенной ухмылкой слушал истории друзей. Даня привык быть оплотом спокойствия и лидером в любом обществе — его атлетичная фигура, невозмутимый взгляд и сдержанная харизма располагали к себе без лишних усилий.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Всё изменилось, когда дверь квартиры в очередной раз распахнулась, и на пороге появился один из приятелей не один, а с гостем.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-author">Автор</span>— Ребят, знакомьтесь, это Икари! — громко объявил пришедший.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>В комнату буквально ворвался алый антропоморфный волк. Его ярко-красная шерсть, подвижные уши и мгновенно расплывшаяся по морде искренняя улыбка сразу притянули к себе все взоры. Икари, казалось, был сгустком чистой, неиссякаемой энергии. Не успев толком переступить порог, он уже весело поздоровался со всеми сразу, успел пошутить про неработающий в подъезде лифт и легко влился в первый попавшийся разговор.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня поначалу лишь окинул новенького покровительственным, чуть ироничным взглядом. Ему казалось, что этот яркий волк — просто гиперактивный, безобидный добряк, которому тяжело усесться на одном месте. Но спустя полчаса, когда компания разбрелась кто куда, Даня и Икари случайно оказались рядом у кухонного островка.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— А ты, я смотрю, главная звезда этого вечера? — шутливо поддел его Даня, опираясь мощными руками о столешницу.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>Икари на секунду смущённо замялся, чуть прижав уши, но тут же весело хмыкнул и парировал:
+        <br>— Да ладно тебе! Просто не люблю, когда все сидят с кислыми минами. А ты, выходит, местный босс?
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Разговор завязался неожиданно легко. Они начали с подколов, но уже через десять минут взахлёб обсуждали видеоигры, нелепые случаи из жизни и ночные прогулки по городу. В Икари не было ни капли фальши — он заразительно смеялся, активно жестикулировал и захватывал своим драйвом. Даня и сам не заметил, как прошёл остаток вечера: шумная тусовка ушла на задний план, а они вдвоём проговорили до самого закрытия вечеринки. Прощаясь на улице, парни с искренним азартом обменялись контактами.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>То, что началось на следующее утро со смешного мема, присланного Икари в восемь утра, моментально переросло в крепкую, настоящую бро-дружбу. Парни стали неразлучны. Их личные сообщения заполнились бесконечными голосовыми от Икари, который мог прямо на ходу эмоционально рассказывать о каком-нибудь утреннем происшествии. Даня всегда был рад поддержать его угар, подлить масла в огонь своей иронией или зазвать волка на ночной забег в онлайн-играх. Это была та самая идеальная связка двух приятелей, которые понимают друг друга с полуслова.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Всё рухнуло в один из будних дней. Икари прислал сообщение, которое сразу выбилось из привычного тона. Из-за внезапных юридических проблем собственника и экстренного решения о сносе целого квартала дом, где волк снимал жильё, опечатывали. Жильцам дали считанные дни на выезд. Обычно неунывающий и гиперактивный Икари впервые был абсолютно растерян. Даня мгновенно считал между строк жуткий стресс: алый волк фактически оказывался на улице с чемоданами, коробками и полной неопределённостью.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня не стал разводить долгих переписок. Узнав адрес, он просто сел в машину и приехал. Поднявшись на нужный этаж, белый заяц увидел открытую дверь и Икари, который сидел на запакованной коробке среди царящего вокруг хаоса. Волк выглядел опущенным: уши висели, а в глазах читалась полная растерянность. Даня спокойно зашёл в комнату, опёрся плечом о дверной проём и с лёгкой ухмылкой скрестил руки на груди.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Ну и долго ты тут сидеть собираешься? — нарушил тишину заяц.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>Икари поднял голову, попытавшись выдавить привычную улыбку:
+        <br>— Да вот... соображаю, куда весь этот хлам везти. Думал подыскать какую-нибудь комнатушку на первое время...
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Слушай, ну ты и попал, конечно, — перебил его Даня, качнув головой. — А я как раз сам давно думал менять жильё, искал что-то попросторнее. Короче, не парься. Давай просто съедемся и снимем один нормальный, большой дом на двоих. И по деньгам выйдет куда проще, и скучать точно не придётся.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>Икари от неожиданности буквально замер. Его глаза округлились, уши дернулись вверх, а щеки под алой шерстью едва заметно вспыхнули. Он смущённо затих, не сразу найдя, что ответить на такую прямую и своевременную помощь.
+        <br>— Ты... это серьёзно сейчас? — тихо спросил волк.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Абсолютно, — хмыкнул Даня, подступая ближе и похлопывая его по плечу своей массивной ладонью. — Давай, подъем, хватаем твои коробки.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Азартный огонёк мгновенно вернулся в глаза Икари. Вся его растерянность испарилась, уступив место привычной энергии. Поиски нового жилья заняли всего пару дней — парни нашли идеальный двухэтажный дом с большой гостиной и балконом на втором этаже. Переезд превратился в настоящий совместный квест. Вечером, когда последняя коробка была разобрана, они уставшие, но довольные вышли на балкон.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Ну что, бро, добро пожаловать в наш новый дом, — ухмыльнулся белый заяц, салютуя другу банкой газировки.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Это будет мощно, — ответил Икари, со звонким смехом стукнувшись своей банкой о его.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Оба они в тот момент искренне радовались началу нового этапа своей дружбы, ещё даже не подозревая, к каким неожиданным и бурным поворотам в их жизни приведёт это соседство под одной крышей.
+      </p>
+    </div>
+
+    <!-- ГЛАВА 2 -->
+    <div class="chapter" id="chapter-2">
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Первые две недели в новом двухэтажном доме прошли под знаком лёгкого хаоса, шутливых споров и постепенной, но очень теплой взаимной подстройки. Назвать парней одинаковыми было просто невозможно: Даня — белый, статный заяц — любил идеальный порядок, ранние подъёмы, четкую дисциплину и чтобы каждая вещь лежала на своём строго отведённом месте. Икари же, яркий алый волк, принёс с собой творческий беспорядок, бесконечные гирлянды проводов, постоянно гремящую на фоне музыку, чашки с недопитым кофе и привычку бодрствовать до самого рассвета.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Но, вопреки ожиданиям, эти контрасты не породили ни одного конфликта. Напротив — они идеально совпали, как детали одного сложного пазла. Даня ненавязчиво приносил засидевшемуся за компом Икари горячий ужин, следя, чтобы тот не забывал перекусить. А волк своим неиссякаемым позитивом, ярким смехом и искренними эмоциями легко разбивал привычную суровость белого зайца, заставляя того улыбаться намного чаще, чем обычно.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Вскоре у них появились свои маленькие, но важные традиции. Каждое утро начиналось с перепалок на кухне о том, чей черед варить кофе, а вечера парни обычно проводили в просторной гостиной на первом этаже. Усевшись на огромный мягкий диван плечом к плечу, они заказывали пиццу, перебрасывались шутками и по нескольку часов подряд проходили кооперативные игры на приставке.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Да ты гонишь! Даня, прикрывай, меня сейчас сметут! — алый волк азартно подпрыгивал на диванной подушке, нажимая на кнопки геймпада с невероятной скоростью. Его пышный алый хвост эмоционально ходил ходуном, периодически задевая бедро и лапу сидящего рядом зайца.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Не суетись, — спокойным, низким голосом отвечал Даня, даже не шелохнувшись. Нажатием пары точных клавиш он ювелирно спасал персонажа Икари от гибели и тут же коротко ухмылялся. — Без меня ты бы и первый уровень не прошёл, шустрый.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Кто?! Я?! — Икари с наигранной обидой толкнул Даню плечом в его мощный, атлетичный бок.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня лишь сдержанно посмеялся, подмигнув другу, но взгляда от его лица не отвёл. С каждым днём в их привычной «бро-дружбе» становилось всё больше едва заметных, но ощутимых деталей. Случайные касания в узком коридоре или на кухне перестали сопровождаться извинениями — они стали чем-то естественным и приятным.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня всё чаще ловил себя на том, что его взгляд надолго задерживается на ярком волке: когда тот смеялся до слёз над какой-то глупостью, или когда сонный и растрёпанный пробирался утром на кухню в одной растянутой майке, потирая глаза и уютно задевая ушами дверной проём. А Икари, в свою очередь, всё чаще смущённо прижимал уши и чувствовал, как по холке пробегают мурашки, когда Даня наклонялся слишком близко, чтобы что-то подсказать или просто забрать чашку из его рук.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Однажды поздно вечером, когда приставка была выключена, а в доме царила тишина, парни вышли на балкон второго этажа. Ночной город шумел где-то далеко внизу огнями проезжающих машин, а в прохладном воздухе пахло свежестью. Икари опирался локтями о перила, задумчиво разглядывая звёздное небо.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Знаешь... — тихо начал волк, ловя ночной ветерок. — Я давно хотел попробовать нормально заняться стримингом. Ну, прямо серьёзно. Создать своё шоу, вести регулярные эфиры, собирать ламповую аудиторию... Но одному всё время казалось, что это будет скучно. Не хватало кого-то, с кем можно делить этот азарт.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>Даня повернул к нему голову, окинув алого волка внимательным, глубоким и очень тёплым взглядом.
+        <br>— А кто сказал, что ты будешь один? — заяц чуть прищурился с лёгким, уверенным азартом. — С твоим шилом в одном месте и моей харизмой мы этот интернет просто в клочья разнесём. Давай обустроим пустующую комнатку на этаже под нашу общую студию.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Глаза Икари вспыхнули ярким восторгом, а хвост снова радостно заходил из стороны в сторону. Идея загорелась моментально.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>На следующие три дня свободная комната превратилась в настоящий эпицентр стройки. Парни вместе собирали массивные столы, монтировали акустические панели на стены, настраивали сложную подсветку и путались в сотнях метров кабелей. Во время этой работы они постоянно оказывались в опасной близости друг к другу: то одновременно тянулись за одним инструментом, то придерживали друг друга на стремянке, случайно сталкиваясь взглядами. Воздух в комнате периодически буквально искрил от невысказанного, нарастающего напряжения.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Наконец всё было готово. Парни выключили верхний свет, и комната преобразилась. В темноте мягко зажглась неоновая алая и небесно-голубая подсветка, отбрасывая красивые блики на стены. На двух больших столах стояли мощные ПК, отрегулированные мониторы и профессиональные микрофоны на пантографах.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Парни уселись в свои геймерские кресла перед пока ещё выключенными экранами. В студии царила особенная тишина.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Завтра наш первый официальный прямой эфир... — с трепетом и улыбкой прошептал Икари, повернув голову к другу.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Готовься, волк, — Даня медленно перевёл взгляд с монитора на Икари. Затем он протянул руку, положив свою широкую, тёплую ладонь поверх лапы Икари прямо на подлокотнике кресла, и мягко, но ощутимо сжал её. — Завтра мы покажем им настоящий дуэт. И поверь, они от нас не оторвутся.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари замер от этого прикосновения, чувствуя, как дыхание прерывается, а сердце начинает бешено стучать где-то в груди. Он не отнял лапу — лишь чуть сжал пальцы белого зайца в ответ. До того момента, как их совместную историю увидит весь интернет, оставались считанные часы...
+      </p>
+    </div>
+
+    <!-- ГЛАВА 3 -->
+    <div class="chapter" id="chapter-3">
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>До намеченного старта первого официального эфира оставалось буквально двадцать минут. В студии приятно пахло свежим кофе, неоновые ленты заливали комнату уютным алым и небесно-голубым светом, а на экранах двух ПК уже были открыты трансляционные программы, яркие заставки и готовые план-сценарии.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари, как всегда, не мог усесться на месте. Алый волк то и дело поправлял микрофон, проверял ракурс веб-камеры, нервно поглаживал свои чуткие уши и каждые тридцать секунд поглядывал на таймер обратного отсчёта в углу монитора. Его пышный хвост беспокойно ходил ходуном, выражая крайнюю степень волнения и предвкушения.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня, сидевший в соседнем кресле, казался воплощением полного, монолитного спокойствия. Белый заяц расслабленно откинулся на спинку, наблюдая за суетой друга с легкой ухмылкой. Но те, кто знал его близко, сразу заметили бы, с каким нежным и прикованным вниманием его глаза следили за каждым хаотичным движением волка.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Не крутись ты так, — сдержанно хмыкнул Даня, чуть наклонив голову. — Ты мне всю ауру перед эфиром разгонишь. Всё у нас настроено идеально, картинка сочная, звук чистый.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Да я знаю, знаю! — Икари выдохнул, повернувшись к нему и улыбнувшись. Волк прижал уши и опустил хвост, пытаясь взять себя в руки. — Просто азарт зашкаливает, понимаешь? Сам подумай: мы столько дней собирали эту студию, и вот сейчас нас впервые увидят сотни людей, наш дуэт...
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Договорить волк не успел.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Раздался резкий, неприятный треск и щелчок где-то под рабочими столами. Неоновые ленты на стенах на секунду вспыхнули слепящим светом и тут же наглухо погасли. Напольный системный блок Икари издал жалобный писк, экраны обоих компьютеров одновременно потемнели, а из-под длинного столешника донёсся едва заметный запах перегретой изоляции. Студия мгновенно погрузилась в полутьму, разбавляемую лишь тусклым светом, пробивающимся из коридора.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Что за... — Икари от неожиданности буквально подпрыгнул в кресле, прижав уши к голове. — Даня?! Что произошло?! Мы сгорели?!
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня отреагировал мгновенно. Без тени паники, но очень быстро и собранно он поднялся с кресла, сбросил с плеч мешающую толстовку и тут же опустился на колени под стол, где переплеталась основная магистраль проводов, удлинителей и сетевых фильтров.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Похоже, один из распределительных блоков подсветки не выдержал нагрузки и выбил предохранитель, — раздался низкий, глухой голос Дани из-под стола. — Или где-то закоротило кабель питания. Стрим через пятнадцать минут, так что отставить панику. Помогай, шустрый.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари тут же спустился на пол и юркнул под стол рядом с ним. Пространство под широким стримерским столом было довольно ограниченным, и чтобы добраться до сгоревшего узла и коробки с предохранителями, парням пришлось прижаться друг к другу практически вплотную.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Фонарик на телефоне свети вот сюда, прямо на клеммы, — попросил Даня, доставая из кармана небольшой мультитул.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Волк включил вспышку и поднёс телефон ближе. В узком, замкнутом пространстве под столом быстро становилось ощутимо жарко. Икари чётко чувствовал своим плечом мощный, тёплый бок белого зайца, слышал его глубокое, размеренное дыхание и ощущал лёгкий запах его парфюма. Яркая вспышка телефона подсвечивала суровый, сосредоточенный профиль Дани, его сильные ладони, уверенно разбирающие оплавившийся пластик, и чуть прищуренные глаза.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Слушай... а мы успеем? — тихо прошептал Икари. Из-за близости к Дане его собственный голос неожиданно прозвучал совсем мягко и неуверенно, а сердце в груди пропустило ощутимый удар.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Успеем, — не отрываясь от работы, спокойно ответил Даня. — Главное — не дрожи. Держи свет ровно.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>В этот момент Даня тянулся ладонью к дальнему переключателю, и его плечо и грудь ещё сильнее прижались к алому волку. Их лица оказались на расстоянии всего пары сантиметров друг от друга.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари замер, практически переставая дышать. Он отчетливо чувствовал тёплое дыхание зайца на своей мордочке и видел, как взгляд Дани на секунду оторвался от проводов. Белый заяц медленно перевёл взгляд с подрагивающих алых ушей волка на его губы, а затем поднялся прямо к глазам.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Воздух под столом, казалось, раскалился до предела. Напряжение между ними больше не было связано с техникой или сорванным эфиром — это была чистая, нескрываемая и невероятно сильная искра. Кончик алого хвоста Икари едва заметно дёрнулся, случайно касаясь бедра Дани. Заяц на мгновение замедлил движения, но отстраняться не стал. Напротив — он на секунду зафиксировал руку и ненавязчиво, очень мягко провёл тыльной стороной ладони по щеке алого волка, будто случайно стирая несуществующую пылинку.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Не бойся, — тихо, бархатисто и с огромным теплом произнёс Даня, не сводя с него глаз. — Со мной ничего не сломается. Вспыхнуть можем только мы.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари лишь смущенно прижал уши, чувствуя, как к щекам под шерстью приливает мощный жар. Сердце колотилось где-то в горле, но отвести взгляд от глубоких глаз зайца он был просто не в силах. Он лишь едва заметно кивнул в ответ.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Готово! — с этим словом Даня щелкнул запасным тумблером, который успел ювелирно заменить прямо во время паузы.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>В ту же секунду комната снова озарилась мягким неоновым светом. Мониторы с тихим гулом начали перезагружаться, подгружая рабочие столы, а неоновые ленты снова заиграли алыми и голубыми бликами. Сбой был полностью устранён.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Парни одновременно выбрались из-под стола и поднялись на ноги. Оба слегка растрёпанные, с бьющимися намного чаще обычного сердцами, они стояли друг напротив друга в ярком свечении обновлённой студии. Икари неловко поправил край майки, пытаясь вернуть привычную беззаботную улыбку, но его с головой выдавал смущённый взгляд и слегка дрожащий хвост.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня же коротко ухмыльнулся, но в его глазах больше не было прежней прохладной сдержанности. В них читалось нечто совершенно новое — глубокое, открытое и осязаемо тёплое.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— До эфира четыре минуты, — напомнил Даня. Он сделал шаг к своему креслу и легко похлопал Икари по плечу, но его широкая ладонь задержалась там чуть дольше, чем требовалось для обычного дружеского знака. — Ну что, волк... погнали покажем им, на что мы способны?
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Погнали, — тихо, но с вспыхнувшим с новой силой восторгом ответил Икари, усаживаясь в своё кресло.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Он положил руки на клавиатуру и почувствовал, как внутри всё полыхает — и от предвкушения перед выходом в прямой эфир, и от тех самых искр, которые только что окончательно изменили всё между ними...
+      </p>
+    </div>
+    <!-- ГЛАВА 4 -->
+    <div class="chapter" id="chapter-4">
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Таймер обратного отсчёта обнулился, и над дверью студии зажглась яркая плашка «IN AIR». Экран мгновенно заполнился тысячами сообщений: чат взрывался от приветствий, смайликов и азартных ожиданий от первого совместного стрима.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Если у Икари и было лёгкое волнение в самые первые секунды, то оно испарилось без следа, стоило ему сжать геймпад. Алый волк включил свой фирменный харизматичный режим на полную: он азартно подставлял врагов, комментировал каждый шаг и с ходу задал бешеный темп. Даня выступал его идеальной противоположностью — хладнокровно прикрывал тылы, выдавал точечные шутки своим низким голосом и не давал волку окончательно заиграться.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Дань, ты видел этот мув?! — громко рассмеялся Икари в микрофон, размахивая лапами в кадре веб-камеры. — Я буквально на сопле проскочил! А ты там что, решил на фоне красивую позу подержать?!
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Я фиксировал твой побег, чтобы ты снова не улетел в бездну, — ровным, бархатистым голосом ответил Даня, ювелирно сняв последней атакой врага, зашедшего волку за спину. — Я рядом, так что можешь и дальше рисковать.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Зрители в чате моментально зацепились за эту сцену. Сообщения полетели с убойной скоростью: <i>«Ого, какие интонации!», «Как он на него смотрит, вы видели?!», «Аура у дуэта просто 10/10», «Он его буквально на руках тащит!»</i>.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари мельком глянул на реакцию чата, но вместо того чтобы засмущаться, лишь дерзко ухмыльнулся, поведя ухом, и наклонился ближе к микрофону.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Эй, чат, не фантазируйте! Мы просто идеально сработались, — задорно подмигнул волк в камеру, а затем перевёл лукавый взгляд на Даню. — Хотя ладно, признаю: мой заяц сегодня реально неплох.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня лишь тихо хмыкнул, оцепив напарника тёплым и явно заинтригованным взглядом, слегка приподняв бровь от такой уверенной подачи.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Три часа трансляции пролетели как одна минута. Онлайн побил все личные рекорды, а динамика дуэта зашла аудитории на ура. Попрощавшись со зрителями и запустив финальную титровую заставку, парни одновременно нажали кнопку завершения эфира. Надпись «IN AIR» погасла.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Уф-ф-ф... вот это был разнос! — выдохнул Икари, откидываясь на спинку кресла и довольный собой до предела. Волк сбросил наушники на стол и победно потянулся. — Мы с тобой просто разнесли этот вечер, Дань. Чат от нас в полном ауте.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>Даня тоже аккуратно отложил гарнитуру и повернулся к волку, опираясь локтем о стол. В полутьме студии его тёплый взгляд смотрелся особенно выразительно.
+        <br>— «Мой заяц», значит? — с лёгкой ухмылкой переспросил Даня, прищурившись. — Быстро же ты присвоил статус.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— А что, есть возражения? — Икари качнул головой, уставившись на него с вызовом и задорным азартом в глазах. — Ты сам под столом сказал, что со мной ничего не сломается. Так что привыкай, бро.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>В студии установилась тихая, невероятно драйвовая и в то же время тёплая атмосфера. Даня лишь покачал головой с уважительным смешком, понимая, что с этим волком ему точно скучно не будет.
+      </p>
+    </div>
+    <!-- ГЛАВА 5 -->
+    <div class="chapter" id="chapter-5">
+     <p class="prose">
+  <span class="speaker-tag tag-author">Автор</span>После трёхчасового стримерского марафона в студии наконец установилась звенящая тишина...
+</p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Оба молча переместились на кухню — организм требовал серьезной подзарядки после такого марафона. Пока закипал чайник, Икари с азартом сооружал на доске бутерброды внушительных размеров, а Даня достал из холодильника остатки вчерашней пиццы и отправил её разогреваться. Телефон алого волка на столе не замолкал ни на секунду: уведомления о новых фолловерах, сообщения в личке, Telegram-каналы и нарезки в соцсетях сыпались сотнями.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Нет, ты только посмотри на это! — со смехом развернул экран к Дане Икари, опираясь локтями о кухонный стол. — Они уже успели заскринить твоё выражение лица, когда я в микрофон заорал на том заваленном раунде, и сделали из этого мем «Когда напарник снова пошёл соло на босса». И смотри на цифры донатов! Мы с тобой сегодня наскребли ровно на тот самый топовый микрофон, который ты хотел.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>Даня взглянул на экран, сделал глоток горячего чая и тихо хмыкнул, качнув головой с абсолютно невозмутимым видом.
+        <br>— Ты бы видел своё собственное лицо, когда я тебя из этой бездны в последнюю секунду вытаскивал, — с лёгкой подколкой парировал заяц, прищурив глаза и ловко перехватывая кусочек пиццы прямо из-под лапы волка. — Поверь, из твоего испуганного взгляда чат нарежет не одну сотню гифок. И микрофон мы купим пополам, не придумывай.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Эй! Это была моя пицца! И вообще, я создавал драматический момент для зрителей, всё было под контролем! — азартно отозвался волк, но в его глазах стоял исключительно задорный огонёк.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Быстро перекусив, раздав ответы в соцсетях и обсудив самые дикие моменты эфира, парни поняли, что ложиться спать прямо сейчас, когда эмоции в голове всё ещё бурлят, абсолютно бесполезно. Икари подхватил тарелку с остатками еды, Даня забрал свежие кружки с чаем, и они переместились в гостиную, где горел только мягкий приглушённый торшер.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Пока Даня расставлял чашки на журнальном столике, волк без лишних церемоний запрыгнул на широкий диван, усевшись поджав под себя ноги, и начал судорожно щелкать пультом в поисках чего-то лёгкого и ненавязчивого.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Только давай без твоих ужастиков на ночь, — подал голос Даня, присаживаясь рядом.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Белый заяц провёл ладонью по спинке дивана, достал большой, сложенный вдвое мягкий плед и не задумываясь накинул его край на плечи Икари, а второй половиной укутался сам.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Включай уже комедию, разносчик чата, — с лёгкой, тёплой улыбкой произнёс Даня, укладываясь поудобнее и естественным, непринуждённым движением прижавшись плечом к волку.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари на секунду замер от такой простой, бытовой и в то же время невероятно комфортной близости, но тут же расслабился. Он заботливо потянул плед на себя, чтобы тот закрывал их обоих от прохладного сквозняка из окна, и чуть накренился к Дане в ответ, удобно упёршись в его плечо.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Фильм тихо бубнил на заднем плане, сменяя кадры и наполняя комнату мягкими бликами светящегося экрана. В гостиной установилась та самая редкая атмосфера абсолютного спокойствия и безопасности, когда не нужно ничего из себя изображать, удерживать внимание тысяч людей или играть на аудиторию.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Где-то на середине картины физическая усталость окончательно взяла своё. Икари начал всё чаще прикрывать глаза, его уши расслабленно опустились, а ответы на замечания Дани становились всё более ленивыми и невнятными. В какой-то момент волк окончательно заснул, и его голова мягко опустилась Дане на плечо.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Заяц не стал отстраняться или двигаться, чтобы не потревожить напарника. Наоборот, он лишь тихо, с глубоким теплом вздохнул, аккуратно поправил сползающий плед, укрывая алого волка до самого подбородка, и сам откинул голову на спинку дивана, прикрыв глаза.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>В тишине ночной гостиной, под едва слышное бубнение телевизора, парни так и уснули вдвоём на диване, крепко укутанные в один тёплый плед.
+      </p>
+    </div>
+    <!-- ГЛАВА 6 -->
+    <div class="chapter" id="chapter-6">
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Утреннее солнце только-только начинало пробиваться сквозь полузакрытые жалюзи гостиной, отбрасывая на ковёр длинные золотистые полосы света. В доме царила абсолютная, глубокая тишина, которую нарушало лишь ровное дыхание двух парней.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня открыл глаза первым. Первое, что он ощутил, когда сознание окончательно вернулось после крепкого сна — ощутимую, но невероятно приятную тяжесть на своём левом плече. Икари всё ещё глубоко спал. Волк зарылся носом в складки мягкого пледа, расслабив свои чуткие уши, а его алый хвост периодически еле заметно подёргивался во сне.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Белый заяц замёрз в одном положении, стараясь не делать лишних движений, чтобы не потревожить напарника. С этого ракурса Икари выглядел абсолютно беззащитным — без своей привычной стримерской гиперактивности, громкого смеха и подколов. Даня тихо вздохнул, ощущая, как где-то в груди разливается непривычное, но глубокое тепло. Он осторожно высвободил руку и чуть поправил плед, аккуратнее укутав плечи волка.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Когда через полчаса Икари всё-таки проснулся, сладко потянувшись и со смущённой ухмылкой осознав, в какой позе они провели остаток ночи, оба без лишних слов поняли: сегодня день нужно посвятить только себе. Никаких камер, никаких чатов и бесконечных уведомлений в телефонах.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Первым делом парни решили закрыть вчерашний гештальт и отправились в крупнейший музыкальный центр города. Выбрать тот самый топовый микрофон, на который они так удачно наскребли донатами во время трансляции, превратилось в отдельное развлечение. Икари с энтузиазмом допрашивал продавца, тестируя звук и корча смешные рожицы в студийные наушники, а Даня стоял рядом, скрестив руки на груди, и с нескрываемым удовольствием наблюдал за азартом волка.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Забрав укомплектованную коробку с оборудованием и закинув её на заднее сиденье машины, парни решили не спешить домой. Вечерний город встретил их приятной прохладой, мягкими алого-розовыми красками заката и огнями открывающегося центрального парка.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>В обычной жизни, когда над головой не горела яркая табличка «IN AIR», их химия никуда не исчезала. Напротив — без необходимости играть на публичный образ она стала более глубокой, личной и осязаемой.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Они медленно прогуливались по широким тенистым аллеям. Икари, как ребёнок, радовался всему вокруг: он то и дело тянул Даню смотреть на уличных музыкантов, выпросил у продавца на лотке огромную розовую сахарную вату, а самому зайцу взял двойной рожок с ванильным мороженым.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— На, держи, тебе полезно охлаждаться после вчерашнего, — задорно хохотнул Икари и, не удержавшись, быстрым движением мазнул холодным ванильным кремом прямо по белому кончику носа Дани.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Ты совсем страх потерял, волк? — посмеивался Даня. Он вытащил из кармана салфетку, неторопливо вытер нос, но в его глазах не было и тени раздражения — только мягкая, глубокая теплота.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Это тебе месть за то, что ты у меня пиццу на кухне отбирал! — азартно парировал волк, а затем без всякой задней мысли перехватил запястье Дани своей лапой, заставляя того попробовать сахарную вату. — Пробуй давай, она реально вкусная.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Касания стали естественной частью этого вечера. Проходя через толпу гуляющих людей или уворачиваясь от проезжающих самокатчиков, Даня нативно придерживал Икари за талию или плечо, направляя его в безопасную сторону. А Икари, рассказывая какую-то очередную забавную историю из своего детства, непринуждённо брал зайца под локоть, озираясь по сторонам.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Смеркалось. Парни решили сделать паузу и зашли в уютное открытое кафе на самом краю парка, окружённое живой изгородью и украшенное гирляндами из тёплых жёлтых лампочек. Выбрав небольшой столик на двоих, они заказали прохладительные лимонады.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Пока Даня отошёл к стойке администратора, чтобы забрать их поднос с напитками, к столику, где сидел один Икари, неожиданно приблизился высокий, довольно развязного вида парень.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-author">Незнакомец</span>— Привет! Не помешаю? — с наглой и уверенной ухмылкой заговорил незнакомец, опёршись ладонью о край стола и нависая над волком. — Я просто прошёл мимо и блин... ты реально очень яркий. Не хочешь обменяться номерами? Сходим на днях на свидание, прогуляемся.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>Икари от такой прямой и в лоб выданной подачи слегка обомлел. Его чуткие уши мгновенно прижались к голове, а алый хвост замер. Волк попытался выдать привычную вежливую отмазку, слегка растерявшись:
+        <br>— Э-э, привет... Спасибо, конечно, за комплимент, но я сегодня вообще-то не один, да и на свидания не...
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-author">Незнакомец</span>— Да ладно тебе, бро, один вечер ничего не решает, — перебил его незнакомец, делая шаг ещё ближе и бесцеремонно нагибаясь к Икари. — Пересечёмся, поболтаем...
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Какие-то проблемы? — раздался за его спиной низкий, бархатистый и ощутимо прохладный голос.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня вернулся к столику. Белый заяц поставил поднос с лимонадами на край и без лишних слов встал вплотную к Икари, фактически заслоняя алого волка своей массивной, атлетичной фигурой. Даня не стал устраивать скандалов или повышать голос, но его взгляд, устремлённый на незнакомца, стал настолько тяжёлым, недвусмысленным и давящим, что температура вокруг столика, казалось, упала на несколько градусов.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Белый заяц спокойным, хозяйским движением положил свою широкую, тёплую ладонь на плечо Икари, ощутимо притягивая волка ближе к себе.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Мы заняты. И на свидания он не ходит, — отрезал Даня с лёгкой, но предельно жёсткой полуулыбкой, от которой у незнакомца явно пропало всякое желание продолжать разговор. — Всего доброго.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Парень оценил внушительный размах плеч белого зайца, его абсолютную уверенность и этот жест, чётко обозначавший границы. Пробормотав что-то невнятное про «да ладно, я просто спросил», незнакомец быстро развернулся и скрылся в вечерней толпе.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари затаил дыхание, снизу вверх глядя на Даню. Сердце алого волка колотилось где-то в районе горла, а к щекам под шерстью прилил мощный жар. Он чётко ощущал тяжёлую, защищающую ладонь на своём плече и ту самую нескрываемую, глубокую собственническую нотку, с которой Даня только что за него вступился.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня перевёл взгляд вниз, на волка. Встретившись с его горящими, смущёнными глазами, жёсткое выражение лица зайца моментально растаяло, сменившись прежним тёплым и чуть лукавым прищуром.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Ты как, шустрый? — тихо спросил Даня. Он не торопился убирать руку с его плеча, наоборот — слегка сжал пальцы, даря чувство абсолютной безопасности.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Я... в полном порядке, — выдохнул Икари, чувствуя, как уши пылают. Волк накрыл ладонь Дани своей лапой, чуточку погладив её подушечками пальцев, и с азартной ухмылкой тихо добавил: — Не знал, что ты у нас такой ревнивый, бро.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Я просто бережно отношусь к тому, что принадлежит нашей команде, — с тёплой улыбкой ответил Даня. Он присел на стул напротив и передвинул к Икари стакан с лимонадом. — Пей свой напиток, разносчик чата. Сегодня мой вечер, и делиться тобой я ни с кем не собираюсь.
+      </p>
+    </div>
+
+    <!-- ГЛАВА 7 -->
+    <div class="chapter" id="chapter-7">
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Оставшийся вечер в кафе пролетел незаметно, словно в тёплом тумане. Острая вспышка защиты со стороны Дани растворилась в тихом шёпоте, шутках и неспешном потягивании лимонада. Но когда парни наконец вышли на улицу, вечерний воздух встретил их приятной прохладой, а город вокруг уже укутался в сумерки, зажигая первые витрины и фонари.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Дорога к машине прошла почти в полном молчании. Это не была неловкая тишина — скорее то редкое чувство, когда обоим комфортно просто находиться рядом.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Заняв свои места в салоне, Даня плавно завёл двигатель. Из динамиков тихо потекла мягкая, обволакивающая музыка. Автомобиль тронулся, увозя их прочь от шумной улицы. За окнами рваной вереницей поплыли неоновые огни ночного города.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари откинулся на подголовник пассажирского кресла. Его алые уши слегка подёргивались в такт басам, а карие глаза следили за мягким светом панелей приборов. Волк то и дело ловил себя на мысли, что возвращается к последним словам Дани: «...делиться тобой я ни с кем не собираюсь». Они висели в воздухе лёгким, но очень ощутимым теплом.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Знаешь... — тихо начал Икари, поворачивая голову к Дане. На губах волка появилась привычная, слегка лукавая, но искренняя улыбка. — А ведь ты сегодня реально напугал того парня. Я даже на секунду подумал, что ты его прямо там в стол впечатаешь.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня чуть улыбнулся, не отрывая взгляда от дороги. Его сильные пальцы уверенно сжимали руль.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Он перешёл грань, — спокойно и весомо ответил заяц, слегка пожав плечами. — Ты бывал наглым на стримах, Икари, но в жизни ты совсем другой. И я не люблю, когда кто-то этого не понимает.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари молча смотрел на профиль Дани. Внутри волка что-то приятно сжалось. Он подался чуть ближе к центральной консоли, опустив ладонь на подлокотник. Его пушистый алый хвост неслышно скользнул по кожаному сиденью, слегка задев бедро зайца.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Спасибо, Даня, — тихо и без всякого пафоса произнёс волк. — Серьёзно.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня на секунду перевёл взгляд с дороги на Икари. В тёмных глазах зайца отразился отблеск пролетавших мимо уличных фонарей. Он опустил одну руку с руля и мягко накрыл ладонь Икари своей широкой, тёплой лапой, коротко сжав её пальцы, после чего снова вернул руку на руль. Этот короткий жест отозвался в груди волка настоящей вспышкой жара.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Когда машина заехала на подземную парковку и двигатель заглох, в салоне воцарилась полная тишина. Парни не спешили выходить. Несколько мгновений они просто сидели в полутьме, слушая собственное дыхание. Расстояние между ними казалось почти физически ощутимым.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Ну что, напарник, пойдём распаковывать наш трофей? — первым нарушил молчание Даня, кивнув на коробку с новым микрофоном на заднем сиденье.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Пойдём, — выдохнул волк, расплываясь в тёплой улыбке.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Поднявшись в квартиру, они не стали включать яркий верхний свет. В студии горела лишь мягкая, диодная подсветка над рабочим столом, создавая уютный полумрак. Разместившись у стола, парни начали вместе вскрывать коробку.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Они подшучивали друг над другом, распутывали провода и рассматривали детали крепления. Но в этих привычных подколах больше не было соревновательного азарта — только невероятный домашний комфорт. Когда Икари доставал из коробки металлический держатель, его пальцы снова случайно касались лап Дани. Никто из них больше не отстранялся. Прикосновения становились длиннее, взгляды — задерживались чуть дольше, а невидимая искра между ними разгоралась всё ярче, обещая, что эта ночь для них обоих только начинается.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Они стояли у рабочего стола так близко, что тепло Дани буквально ощущалось физически. Мягкий синевато-золотистый свет диодной ленты преломлялся в полированной поверхности столешницы, отбрасывая длинные тени на стены студии. Шум ночного города за окном казался бесконечно далеким, растворяясь за плотными шторами.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари аккуратно установил новый микрофон в металлический «паук», но вместо того чтобы закрутить фиксатор, замер. Пальцы Дани все еще оставались на его запястье — не сжимая с силой, но и не давая отстраниться.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Ну и... как тебе звук? — с легкой хрипотцой прошептал волк, пытаясь вернуть диалогу привычный шутливый тон, хотя чуткие алые уши выдавали его с потрохами, слегка прижимаясь к голове от волнения.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Мы его даже не подключили, шустрый, — тихо хмыкнул Даня. Голос белого зайца звучал неожиданно низко и бархатисто в тишине комнаты.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Заяц медленно скользнул пальцами выше по рукаву худи Икари, огибая локоть и останавливаясь на его плече. Он чуть подался вперед, сокращая и без того крошечное расстояние между ними. Внушительная фигура Дани мягко накрыла волка, но в этом не было давней демонстрации силы или стримерского соперничества. Только с трудом сдерживаемая нежность.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари чуть запрокинул голову, встречаясь с темным, глубоким взглядом Дани. Сердце алого волка заколотилось где-то у самого горла, а хвост нервно дрогнул, плавно огибая бедро зайца и невольно притягивая его ближе к столешнице.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Даня... — выдохнул Икари, и его собственное имя из его же уст прозвучало скорее как просьба, чем как предупреждение.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Я обещал, что делиться тобой ни с кем не собираюсь, помнишь? — напомнил Даня, наклоняясь к самому уху волка. Его горячее дыхание заставило мех на затылке Икари встать дыбом. — И я привык держать слово. Особенно когда дело касается тебя.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Заяц медленно накрыл ладонью затылок Икари, зарываясь пальцами в густой алый мех, и сократил последние миллиметры между их лицами.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Поцелуй получился не торопливым или агрессивным, а глубоким, обжигающим и тягучим, словно оба слишком долго ждали этого момента за стенами своих стримерских образов. Икари тихо ахнул прямо в губы Дани, цепляясь когтистыми лапами за широкие плечи зайца и полностью отдаваясь этому долгожданному ощущению безопасности и тепла.
+      </p>
+    </div>
+
+<!-- ГЛАВА 8 -->
+    <div class="chapter" id="chapter-8">
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Оторвавшись друг от друга лишь на мгновение, чтобы перевести сбившееся, рваное дыхание, парни так и остались стоять вплотную у края рабочего стола. Поцелуй окончательно разрушил последние призрачные барьеры. На смену привычной иронии и шутливым подколкам пришла густая, почти физически ощутимая страсть, которая неизбежно копилась между ними за долгие недели совместных эфиров. Никто из них больше не пытался отвести взгляд или перевести всё в шутку. Каждый вдох, каждый шаг и каждое прикосновение становились весомыми, наполняясь откровенным, голодным намерением.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня медленно опустил широкие, обжигающе тёплые ладони на талию Икари. Под его тяжелыми пальцами тонкая ткань одежды казалась совершенно лишней, мешающей преградой. Тело алого волка едва заметно дрожало от сдерживаемого напряжения и пульсирующего жара, стремительно заполняющего всё внутри. Взгляд обычно спокойного, сдержанного белого зайца потемнел, став глубоким и полным с трудом укрощаемой похоти, но в движениях его крупной кисти всё ещё читалась поразительная, трепетная чуткость к партнеру.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Ты... уверен? — едва слышно прошептал Икари. Его чуткие алые уши плотно прижались к голове, а карие глаза ярко блестели в полутьме студии от захлестнувших эмоций. Волк осторожно положил лапы на широкую грудь Дани, чувствуя, как бешено и ритмично колотится сердце зайца под тканью.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Как никогда в жизни, — низко, с мягкой и бархатистой хрипотцой ответил Даня, крепче сжимая его талию.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Белый заяц уверенным, неторопливым движением поддел пальцами край объемного худи Икари и плавно сдернул его через голову, отбрасывая ткань куда-то на рабочий стул. Икари остался с полностью обнаженным торсом. Волк не пытался прикрыться, смущенно обнять себя за плечи или отстраниться. Напротив — он доверчиво подался навстречу, когда Даня принялся стягивать собственную футболку, открывая мощный рельеф мускулистой груди и густого белоснежного меха. Их голое тело к телу соприкоснулось впервые, и от этого контраста горячей кожи и шерсти по спинам обоих пробежала крупная, ощутимая волна мурашек.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Подхватив волка под бёдра с особым, властным трепетом, Даня слегка приподнял его и аккуратно перенес на мягкий диван в зоне отдыха. Они опустились на подушки вместе, сходу сплетаясь в новом, безумно жадном поцелуе. В стороне остались выключенные мониторы, микрофоны и остывший чат. Нетерпеливо избавившись от остатков мешающей одежды, парни размыли последние границы. Их первое интимное сближение превратилось в неотвратимую, обжигающую необходимость.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Каждое новое движение шершавых ладоней Дани по чувствительной коже и алому меху выбивало из Икари рваные, сбивчивые выдохи. Заяц жадно и подробнее изучал его: целовал чувствительную ложбинку у ключицы, спускался горячими губами по груди к животу, прикусывал кожу и заставлял волка сладко выгибаться навстречу этой нежной пытке. Икари цеплялся когтями за широкие плечи Дани, сжимая его мышцы, пока его алый пушистый хвост судорожно обвивал бедро зайца, без слов требуя большего.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня нежно, но настойчиво развел его бёдра и протиснулся вплотную между ними. Чувствуя обжигающую готовность партнера и плотный контакт телом к телу, заяц накрыл губы Икари глубоким поцелуем, одновременно с этим плавно и настойчиво соединяя их в единое целое. Икари громко и сдавленно ахнул прямо ему в губы, до боли сжимая ноги на талии Дани и полностью растворяясь в этом остром, непривычном чувстве абсолютной наполненности.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Даня... ах... — сбивчиво и сладко выдохнул волк, когда заяц задал первый медленный, глубокий ритм. Икари зажмурился от захлестнувшей волны кайфа, запрокидывая голову на подушки.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Я здесь, шустрый... — отозвался Даня, тяжело и прерывисто дыша, покрывая его шею и скулы горячими влажными поцелуями. — Смотри на меня. Ты прекрасен.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>С каждым новым фрикционным движением последнее стеснение окончательно сгорало в алом пламени страсти. Ритм становился всё более настойчивым, откровенным и глубоким. Воздух в полутёмной комнате казался густым и горячим, пропитанным ароматом их тел и ощутимым возбуждением. Икари подавался бёдрами навстречу каждому толчку, уже не пытаясь сдерживать звонкие, откровенные стоны и крепко сжимая белую шерсть на затылке Дани. Заяц уверенно удерживал его за бёдра, подстраивая под себя, задавая темп и подминая под себя, доводя обоих до грани сладостного безумия.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>В тишине студии разносились лишь рваное дыхание, тихие шорохи обивки дивана и звонкий шёпот искренних признаний. Пот блестел на их плечах и груди, а алый и белый мех слились в единое целое. Икари полностью отдал контроль белому зайцу, доверяя ему каждую секунду этого момента, а Даня отдавал всего себя этой дикой, накатывающей волнами близости. Каждое новое движение ощущалось на грани выносливости, заставляя их тела натягиваться как струны.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Финал накрыл их одновременно и сокрушительно. На самом пике Икари дрожаще вскрикнул, намертво захлестнув талию Дани ногами и алым хвостом, выгибаясь в спине от нахлынувшего экстаза. Заяц сдавленно и глухо рыкнул, уткнувшись носом в алый мех на шее волка и отдавая остаток сил этому всепоглощающему всплеску. Они обессиленно опустились на подушки дивана, тяжело, синхронно дыша и слушая, как постепенно замедляется их бешено колотящийся пульс.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня не стал отстраняться — он аккуратно прижал Икари к себе, укрывая их обоих широкими лапами. Волк доверчиво уткнулся подбородком в его грудь, ощущая абсолютный покой и уютное тепло. В ответ Икари расправил свой длинный, роскошный алый хвост и мягко накрыл им их сплетённые тела, словно тёплым пушистым пледом. Они продолжали крепко обнимать друг друга в мягкой полутьме студии, восстанавливая силы и не размыкая объятий до самого утра.
+      </p>
+    </div>
+
+
+    <!-- ГЛАВА 9 -->
+    <div class="chapter" id="chapter-9">
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Ранний утренний свет мягко пробивался сквозь щель между плотными шторами студии, разгоняя ночной полумрак. Первые золотистые лучи скользнули по дивану, где в уютных объятиях всё ещё спали парни. Икари медленно зашевелился, сладко потягиваясь и вытягивая алые лапы. Голова ещё была тяжелой от приятной сонной неги, а тело всё помнило каждую секунду прошедшей страстной ночи. Волк сонный щурился, поворачивая голову в сторону рабочего стола, и его взгляд случайно зацепился за настенный календарь.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Алые уши Икари мгновенно взвились под прямым углом, а карие глаза округлились до размера блюдец. На календаре крупным красным шрифтом горела дата — <strong>8 августа</strong>.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— ЧЁРТ! — сдавленно и панически выдохнул волк, резко подрываясь с дивана и в панике запутываясь в собственном пушистом хвосте.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>От такого резкого толчка Даня сладко проворчал, потирая сонный нос лапой, и медленно приоткрыл тёмные глаза. Белый заяц выглядел максимально расслабленным, слегка помятым и абсолютно не понимающим, куда и зачем волк так судорожно пытается натянуть худи задом наперёд.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Шустрый... ты чего вскочил в такую рань? — с глубокой утренней хрипотцой пробасил Даня, потягиваясь до хруста в суставах и зевая во весь рот. — Иди обратно под хвост, ещё даже восьми утра нет...
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Какой «обратно»?! Даня, вставай, у нас катастрофа! Сегодня 8 августа! У Женёк день рождения! У нашей Жени! — Икари буквально метался по студии, лихорадочно застегивая штаны и параллельно пытаясь расчесать взъерошенный мех на ушах. — Мы вообще всё проспали! Если мы не устроим ей праздник прямо сейчас, она нас живьём закопает, забанит во всех соцсетях и даже модерацию на стримах не включит!
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Имя Жени и угроза тотального бана подействовали на сонного зайца лучше любого адреналина. Даня в мгновение ока сбросил остатки сна, резко сел на диване и за секунду натянул футболку.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Так, без паники, — ухмыльнулся белый заяц, подхватывая бегающего волка за талию и на секунду прижимая к себе, чтобы тот перестал хаотично кружиться по комнате. — Время ещё есть. Устроим ей такой замес, о котором весь Twitch и YouTube ещё месяц гудеть будут. Подключаем резервы!
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>И план развернулся мгновенно. Это не должен был быть банальный унылый праздник с чаем и покупным тортом. Если устраивать тусовку для Женёк — то только жесткий, безумный и максимально эпичный туч-рейв!
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Следующие три часа студия напоминала зону боевых действий. Парни выжали максимум из своих стримерских связей и фантазии. Даня притащил откуда-то двухметровый профессиональный сабвуфер, от басов которого дрожали стёкла во всём здании, и обвешал все стены неоновыми RGB-лентами. Икари настроил мощный светомузыкальный софт, приготовил кастомный праздничный оверлей для секретного стрим-марафона и оформил затейливый поднос.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Центром праздника стал огромный кастомный торт в форме огромного золотого микрофона, обложенный по контуру настоящими холодными фонтанами-фейерверками. А вокруг дивана уже горками стояли коробки с пиццей, энергетики, снеки и огромный короб с подарком, куда парни упаковали топовый сетап оборудования, о котором Женя давно намекала на трансляциях.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Звони ей! Скажи, что у нас тут в студии якобы провода сгорели, компьютер дымится и срочно нужна её помощь! — азартно прошептал Икари, прячась за диваном с двухметровой хлопушкой наготове.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Учел, уже набрал, — хитро ухмыльнулся белый заяц, откладывая телефон и вставая рядом с пушкой для конфетти. — Говорит, уже бежит с огнетушителем. Держись, Женёк, сейчас будет очень жарко!
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Спустя десять минут дверь студии с грохотом распахнулась. На пороге появилась всклокоченная и взволнованная Женя, сходу готовая спасать оборудование. И в эту же миллисекунду комната взрывается плотным снопом золотых искр, оглушительным басом из колонок, вспышками неонового света и дружным, сорванным криком волка и зайца:
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-author">Икари и Даня</span>— С ДНЁМ РОЖДЕНИЯ, ЖЕНЁК-К-К!!!
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Шок на лице Жени сменился широкой улыбкой, когда до неё наконец дошло: никакого пожара нет, а провода сгорели разве что от накала этой безумной атмосферы.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-zhenya">Женя</span>— Вы... вы совсем с ума сошли?! — перекрикивая плотный бас, заорала Женя, но в её голосе звучал не поддельный гнев, а чистый, неразбавленный восторг. — Я летела сюда через город с огнетушителем наперевес, думала, вы тут студию спалили!
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Ну, технически мы реально устроили тут пожар, — ухмыльнулся Даня, делая шаг вперёд и за шкирку подтягивая к себе всё ещё взъерошенного Икари. — Только праздник вышел куда горячее, чем ты думала!
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Волк, едва успев выплюнуть застрявшую в меху блёстку от хлопушки, тут же подскочил к Жене и заключил её в крепкие объятия, ероша алой лапой её волосы.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— С днём рождения, Женёк! Мы бы ни за что не проспали твой день! Твой праздничный стрим уже запущен, в чате просто дичь творится, так что иди принимай подарки!
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня тем временем уже подкатил к центру комнаты главный сюрприз — огромную коробку, перевязанную кривым, но явно завязанным с любовью бантом.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Женя подбежала к коробке и быстро сорвала упаковку. Внутри лежал новенький топовый сетап — мощнейшая карта захвата, студийный микрофон премиум-класса и профессиональный контроллер для стримов, о котором она прожужжала им все уши за последние три месяца.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-zhenya">Женя</span>— Ребята... вы серьёзно? — Женя на секунду потеряла дар речи, переводя взгляд с железки на ухмыляющегося зайца и довольного волка, у которого алый хвост ходил ходуном от гордости за успешный сюрприз. — Это же... это же просто космос!
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— А это ещё не всё! — выкрикнул Икари, подбегая к столу и поджигая холодные фонтаны на торте-микрофоне. Снопы серебряных искр взвились к потолку, заставив всю комнату заиграть яркими бликами. — Сегодня никаких правил! Стрим идет на все наши каналы, пицца горячая, напитки холодные, а чат выполнят любые твои челленджи!
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Праздник набрал обороты моментально. Следующие несколько часов превратились в сплошной хаос: Даня проиграл Жене в файтинге на стриме и по условию наказания сидел с розовыми бантиками на ушах, Икари едва успевал модерировать поток донатов, разрывающий колонки, а сама виновница торжества светилась от счастья, за обе щеки уплетая кастомный торт.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Ближе к вечеру, когда основной угар утих, а стрим был официально завершён на рекордном онлайне, они втроём уселись на мягкий диван прямо среди коробок из-под пиццы и конфетти.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-zhenya">Женя</span>— Спасибо вам, пацаны. Это был лучший день рождения в моей жизни. Серьёзно.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня мягко улыбнулся, обнимая её за плечо, и переглянулся с Икари. Алый волк подмигнул зайцу в ответ, незаметно поджав к себе хвост и ощущая, как после всех этих безумных гонок и непередаваемой ночи этот день стал по-настоящему идеальным.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Женя пару секунд покрутила в руках пустую баночку из-под газировки, а затем её глаза азартно блеснули. Она резко села прямо, глядя то на волка, то на зайца.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-zhenya">Женя</span>— Так, народ, спать всё равно ещё рано, а эмоции переполняют! У меня есть идея. Давайте поднимемся на крышу? Ночной воздух сейчас просто кайф, да и сидеть в четырёх стенах после такого угара — преступление.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари мгновенно закивал, поводя алыми ушами, а Даня лишь тепло ухмыльнулся, поднимаясь с дивана и протягивая имениннице руку.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— На крышу так на крышу. Главное — захватить плед, а то августовские ночи уже свежие.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Спустя пару минут они уже придерживали тяжелую железную дверь и выходили на плоский рубероид крыши. Наверху их встретила оглушительная ночная тишина, приятный прохладный ветерок и раскинувшийся внизу океан городских огней. Шум проезжающих машин казался отсюда далёким и умиротворяющим.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Даня расстелил на сухом покрытии большой тёмный плед. Все трое улеглись рядом, подложив руки под головы и уставившись в бездонное, усыпанное мелкой крошкой звёзд небо.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Красота-то какая... — тихо выдохнул Икари, оглаживая хвостом край пледа.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>И именно в этот момент тёмный небосвод рассекла яркая серебряная полоса. За ней — ещё одна, и ещё, оставляя за собой быстрые тонкие хвосты. Августовский звездопад накрыл ночной город во всей своей красоте.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-zhenya">Женя</span>— Ого! Вы видите?! — Женя приподнялась на локтях, не скрывая детского восторга. — Настоящий звездопад!
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Быстро загадывай желание! — азартно толкнул её локтем Икари, прищурив карие глаза. — Раз уж сегодня 8 августа и твой день рождения, небесная канцелярия просто обязана его исполнить.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Давай, Женёк, не задумываясь, — поддержал Даня, улыбаясь и придерживая рукой алый хвост волка, чтобы тот не пачкался об рубероид. — Самое главное и искреннее.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Женя на секунду зажмурилась. Прохладный ветер трепал её волосы, а на губах замерла очень теплая, настоящая улыбка. Она глубоко вдохнула ночной воздух, открыла глаза, посмотрела сначала на волка, потом на зайца и тихо, но уверенно произнесла:
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-zhenya">Женя</span>— Я хочу... чтобы мы всегда оставались вместе. Что бы ни происходило, какие бы стримы, дела и жизненные повороты нас ни ждали — чтобы вы, пацаны, всегда были рядом и мы оставались самыми лучшими друзьями.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Икари и Даня переглянулись. В этой простой и искренней фразе было столько тепла, что прохладный августовский ветер мгновенно перестал ощущаться. Волк улыбнулся во весь рот и крепко сжал её ладонь своей алой лапой, а Даня накрыл их руки своей широкой, горячей ладонью.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-danya">Даня</span>— Заметано, Женёк, — тихо и уверенно сказал Даня. — Это желание точно исполнится. Мы никуда не денемся.
+      </p>
+
+      <p class="dialogue">
+        <span class="speaker-tag tag-ikari">Икари</span>— Влипла ты с нами навсегда, — со смешком добавил Икари, прижимаясь плечом к друзьям.
+      </p>
+
+      <p class="prose">
+        <span class="speaker-tag tag-author">Автор</span>Они так и остались лежать на крыше под падающими звёздами, слушая дыхание ночного города и зная, что впереди их ждёт ещё бесконечное множество таких же ярких и сумасшедших дней.
+      </p>
+    </div>
+    
+
+
+   <!-- Навигация -->
+    <div class="navigation-panel">
+      <button class="nav-btn" id="prevBtn" onclick="changeChapter(-1)" disabled>
+        ← Назад
+      </button>
+
+      <span class="page-indicator" id="pageIndicator">Глава 1 из 9</span>
+
+      <button class="nav-btn" id="nextBtn" onclick="changeChapter(1)">
+        Вперед →
+      </button>
+    </div>
+  </div>
+
+  <script>
+   let currentChapter = 1;
+const totalChapters = 9; 
+
+    const chapterTitles = {
+      1: "Глава 1: Новое соседство",
+      2: "Глава 2: Общие ритмы и первые искры",
+      3: "Глава 3: Внезапный сбой и близкие искры",
+      4: "Глава 4: Прямой эфир и общие ритмы",
+      5: "Глава 5: Послевкусие и ночной уют",
+      6: "Глава 6: За пределами кадра",
+      7: "Глава 7: Вспышка в ночи",
+      8: "Глава 8: Первый раз",
+      9: "Глава 9: 8 Августа"
+    };
+
+    function changeChapter(direction) {
+      const newChapter = currentChapter + direction;
+
+      if (newChapter >= 1 && newChapter <= totalChapters) {
+        document.getElementById(`chapter-${currentChapter}`).classList.remove('active');
+        currentChapter = newChapter;
+        document.getElementById(`chapter-${currentChapter}`).classList.add('active');
+
+        document.getElementById('chapterHeaderTitle').innerText = chapterTitles[currentChapter];
+        document.getElementById('prevBtn').disabled = (currentChapter === 1);
+        document.getElementById('nextBtn').disabled = (currentChapter === totalChapters);
+        document.getElementById('pageIndicator').innerText = `Глава ${currentChapter} из ${totalChapters}`;
+
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    }
+
+    function toggleSettings() {
+      document.getElementById('settingsMenu').classList.toggle('open');
+    }
+
+    function setTheme(bg, cardBg, border, el) {
+      document.documentElement.style.setProperty('--bg-color', bg);
+      document.documentElement.style.setProperty('--card-bg', cardBg);
+      document.documentElement.style.setProperty('--border-color', border);
+
+      const opts = el.parentElement.querySelectorAll('.color-opt');
+      opts.forEach(o => o.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function setTextColor(main, muted, el) {
+      document.documentElement.style.setProperty('--text-color', main);
+      document.documentElement.style.setProperty('--text-muted', muted);
+      document.documentElement.style.setProperty('--dialogue-color', main);
+
+      const opts = el.parentElement.querySelectorAll('.color-opt');
+      opts.forEach(o => o.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    function setAccentColor(accent, crimson, glow, el) {
+      document.documentElement.style.setProperty('--accent-red', accent);
+      document.documentElement.style.setProperty('--accent-crimson', crimson);
+      document.documentElement.style.setProperty('--accent-glow', glow);
+
+      const opts = el.parentElement.querySelectorAll('.color-opt');
+      opts.forEach(o => o.classList.remove('active'));
+      el.classList.add('active');
+    }
+
+    let currentFontSize = 20;
+    function changeFontSize(delta) {
+      currentFontSize = Math.min(Math.max(16, currentFontSize + delta), 26);
+      document.documentElement.style.setProperty('--font-size-base', `${currentFontSize}px`);
+    }
+
+    document.addEventListener('click', function(e) {
+      const menu = document.getElementById('settingsMenu');
+      const toggle = document.querySelector('.settings-toggle');
+      if (menu && toggle && !menu.contains(e.target) && !toggle.contains(e.target)) {
+        menu.classList.remove('open');
+      }
+    });
+  </script>
+</body>
+</html>
